@@ -1,0 +1,93 @@
+import networkx as nx
+
+##########################
+## cycles
+##########################
+
+# cycle basis of the graph
+def cycle_basis(G):
+    return nx.cycle_basis(G, 0)
+
+# remove cycle if it forms a clique
+def reduced_cycle_basis(cycle_basis, max_cliques):
+    return [cy for cy in cycle_b for cl in max_cliques if not set(cy).issubset(cl)]
+
+##########################
+## cliques
+##########################
+
+# cliques with length > 2
+def max_cliques(G):
+    return sorted([clique for clique in nx.find_cliques(G) if len(clique)>2])
+
+##########################
+## "line" path
+## similar to bridges
+##########################
+
+# return list of node and corresponding neighbors when the number of neighbors is le than n
+def _le_n_neigh_nodes(G, n):
+    l_nodes = {}
+    for node in nx.nodes(G):
+        neighbors = list(nx.neighbors(G, node))
+        if len(neighbors) <= n:
+            l_nodes[node] = neighbors
+    return l_nodes
+
+# construct the path where each node as
+def _search_line_rec(l_node, path, l_nodes): # faster implementation possible with dp or check presence
+    path.append(l_node)
+    if l_node in l_nodes:
+        for neighbors in l_nodes[l_node]:
+            if neighbors not in path:
+                _search_line_rec(neighbors, path, l_nodes)
+    return path
+
+# return the "line" paths of the graph, n constrain the "path size"
+def line_paths(G, n):
+    line_paths = []
+    l_nodes = _le_n_neigh_nodes(G, n)
+
+    for l_node in list(l_nodes.keys()):
+        path = _search_line_rec(l_node, [], l_nodes)
+        line_paths.append(path)
+
+    reduced_line_path = list([list(x) for x in set([frozenset(path) for path in line_paths if len(path) > 2])])
+    return reduced_line_path
+
+
+##########################
+## Component
+##########################
+
+# Generates nodes in each maximal k-edge-connected component in G.
+def k_edge_comp(G, k):
+    return [comp for comp in sorted(map(sorted, nx.k_edge_components(G, k=2))) if len(comp) > 2]
+
+#A k-component is a maximal subgraph of a graph G that has, at least, node connectivity k: we need to remove at least k nodes
+#to break it into more components. k-components have an inherent hierarchical structure because they are nested in terms of connectivity:
+#a connected graph can contain several 2-components, each of which can contain one or more 3-components, and so forth.
+def k_comp(G):
+    return [list(comp[0]) for comp in nx.k_components(G).values()]
+
+
+##########################
+## Star
+##########################
+
+def _star_rec(node, visited, layer):
+    if layer == 0:
+        return
+    visited.add(node)
+    for neighbors in list(nx.neighbors(G, node)):
+        _star_rec(neighbors, visited, layer-1)
+    return list(visited)
+
+def star(G, n):
+    stars = []
+    for node in nx.nodes(G):
+        stars.append(_star_rec(node, set(), n+1))
+    return stars
+
+
+

@@ -1,0 +1,23 @@
+* Supernode GNN
+** Theory
+*** tree structure GNN WL1
+   Graph neural network (GNN)'s success in graph classification is closely related to the Weisfeiler-Lehman (1-WL) algorithm. By iteratively aggregating neighboring node features to a center node, both 1-WL and GNN obtain a node representation that encodes a rooted subtree around the center node. These rooted subtree representations are then pooled into a single representation to represent the whole graph. However, rooted subtrees are of limited expressiveness to represent a non-tree graph
+** Paper
+*** Nested Graph Neural Networks
+NGNN represents a graph with rooted subgraphs instead of rooted subtrees, so that two graphs sharing many identical
+subgraphs (rather than subtrees) tend to have similar representations.
+https://arxiv.org/abs/2110.13197
+
+** Methods
+*** preprocess
+Identify all the concepts
+Assign a feature for each node in base of the concepts that is part of
+Run base GNN
+Graph Classification
+
+*** subgraph
+for each node run a GNN on a subgraph, creating node embeddings that are not "star" but subgraph
+(Optional) message passing
+Graph Classification
+
+*** high order message passing

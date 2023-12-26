@@ -1,0 +1,7 @@
+** Dataset creation
+** How it works
+   1) identify concepts (graph structure)
+      eg: loop, tree, star
+   2) add a supernode for each concepts, link with every node that are contained in it
+   3) run a gnn (maybe special treatment for supernode)
+   4) graph classification
