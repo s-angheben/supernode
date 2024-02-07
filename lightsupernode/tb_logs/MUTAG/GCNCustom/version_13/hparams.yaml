@@ -1,0 +1,17 @@
+classifier: "MLP(in_channels=64,out_channels=2,channel_list=[64, 64, 2],num_layers=2,norm=ModuleList(\n\
+  \  (0): BatchNorm(64)\n),dropout=[0.5, 0.0])"
+concepts: '[{''name'': ''GCB'', ''fun'': <function cycle_basis at 0x7f062c9b72e0>,
+  ''args'': []}, {''name'': ''GMC'', ''fun'': <function max_cliques at 0x7f062c9b7240>,
+  ''args'': []}, {''name'': ''GLP2'', ''fun'': <function line_paths at 0x7f062c9b7560>,
+  ''args'': []}]'
+dataset: MUTAG
+description: Normal GIN with 3 layers and 1 SimpleAdd SupConv
+device: !!python/object/apply:torch.device
+- cuda
+epochs: 300
+gnn: '1: GIN NormalConv (64)-2: GIN NormalConv (64)-3: GIN NormalConv (64)-4: SimpleAdd
+  SupConv'
+loss: cross_entropy
+metric: MulticlassAccuracy
+model: GCNCustom
+readout: global_add_pool

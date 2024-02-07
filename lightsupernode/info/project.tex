@@ -1,0 +1,480 @@
+\documentclass{article}
+
+\input{preamble.tex}
+
+\usepackage[english]{babel}
+\usepackage[a4paper,tmargin=2cm,rmargin=1in,lmargin=1in,margin=0.85in,bmargin=2cm,footskip=.2in]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{custompython}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+%  frame=L,
+  xleftmargin=\parindent,
+  language=python,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstset{escapechar=@,style=custompython}
+
+\title{Supernode\\Advanced Topics in Machine Learning and Optimization}
+\author{Samuele Angheben, 240268}
+\date{}
+
+\begin{document}
+	\maketitle
+
+    \section{Introduction}
+
+
+	\section{Data}
+    graph classification
+%    The goal is to analyze if the addition of the supernodes will increase the expressiveness power and/or facilitate the training of a graph neural network model on the task of graph classification, f
+    \subsection{Synthetic Data Generation}
+    For the first experiments we decided to build our own datasets, in this way we are in control of the full details and understanding of the data. In particular we build ad-hoc dataset with particular patterns that represent some concepts.
+
+    \subsubsection{Dataset\_tree\_cycle}
+    This is the first dataset that we synthesized, it is composed of graphs with and without cycles, in particular the class of each graph is given by this property. \\
+    Considering the fact that the concept \texttt{cycle\_basis} for each cycle will create a supernode connected to each node of the corrispettive cycle, the idea is to check whether this preprocessing phase will actually increase the performance of the classification.
+    \begin{remark}
+        In this case the preprocessing computation alone will be able to correctly classify the dataset, since to add a supernode we need to find the cycles, but the goal is understand if the model will benefit from this preprocessing on the graph to then apply this techniques in more complex settings.
+    \end{remark}
+
+    \noindent
+    To synthesize this dataset we exploit the fact that a graph without cycles is a tree and therefore we first constructed random trees and then to half of them we added \texttt{cycle\_level}-times random edges. In this way we can generate this type of dataset quickly and flexibly in respect to number of graphs, graphs size, cycle level and proportions.
+
+    \begin{remark}
+        We set each node features to \( [1] \), in this way we force the model to reason more on the structure of the graph.
+    \end{remark}
+
+    \noindent
+    After the dataset generation we implemented the \texttt{torch.geometric.data.Dataset} class for this dataset to integrate it to the torch ecosystem. At a later time we implemented the class \texttt{torch.geometric.data.InMemoryDataset} to have better performance during the training phase. Then we also create a \texttt{dataloader} to split our dataset in training, validation and test set according to our needs.
+
+    \begin{remark}
+        Code in the folder \texttt{supernode/dataset}
+    \end{remark}
+
+    \subsection{Concepts and Supernodes}
+    \begin{definition}[Concept]
+        A concept is a pattern in a graph. Given a graph \( G = (V,E) \) we can extract each realization of it as a list of subsets of nodes \( [C_1, \ldots , C_n] \; \text{where} \; C_i \subseteq V \).
+    \end{definition}
+    \begin{eg}
+        \texttt{max\_cliques}, \texttt{cycle\_basis}, \texttt{line\_paths}, \texttt{star}
+    \end{eg}
+    \begin{remark}
+        Check the file \texttt{ConceptsVisualization.pdf} for the code and visualization of each concept on a simple graph.
+    \end{remark}
+
+    \noindent
+    For each concepts in the example we built a function to extract the corrispettive list of subnodes with the help of the \texttt{networkx} library.
+
+    \begin{definition}[Supernodes]
+        Given a graph \( G = (V,E) \) and a list \( [C_1, \ldots , C_n] \; \text{where} \; C_i \subseteq V \) identify a concept in the graph, we define for each \( C_i \) a supernode a node \( S_i \).\\
+        We then can add the supernodes \( S_i \) to the graph \( G \) in this way:\[
+            G' = (V + S_i, E + E_i) \quad \quad  \forall i
+        \]
+        where \( E_i = \{(S_i, v_j) | v_j \in C_i\} \)
+
+    \end{definition}
+
+    \noindent
+    \begin{remark}
+        A single concept create multiple supernodes if the pattern that it represent can be found in different location of the graph, so if we decide to transforms our data with \( n \) concepts we will get \( n \) set of supernodes (\( n \) types of supernodes), each set (type) corresponds to one concept and will contains one supernode for each realization of the particular pattern.
+    \end{remark}
+
+    \subsection{AddSupernode Transformation}
+    To integrate this techniques with the torch geometric ecosystem we implemented the transformation \texttt{AddSupernode} from the class \texttt{torch\_geometric.transforms.BaseTransform}. \\
+    In summary given a list of concepts we convert the graph to networkx to extract each concepts, for each of them we add the corrispettive supernode and edges, initialize its features to \( [1] \) and convert it back to the torch geometric representation.
+    This is very useful because now we can easily transform the dataset:
+    \begin{code}[Transform - AddSupernode]
+        \noindent
+        \begin{lstlisting}
+concepts_list_ex = [
+       {"name": "GCB", "fun": cycle_basis, "args": []},
+       {"name": "GMC", "fun": max_cliques, "args": []},
+       {"name": "GLP2", "fun": line_paths, "args": [2]}
+    ]
+
+dataset.transform = AddSupernodes(concepts_list_ex)
+        \end{lstlisting}
+    \end{code}
+
+    \noindent
+    And since we have implemented also the \texttt{Dataset} class we can pretransform the dataset:
+    \begin{code}[Pretransform - AddSupernode]
+        \noindent
+        \begin{lstlisting}
+dataset = Dataset_tree_cycle_Memory(root="./dataset/d1MemT",
+                                    dataset_path="./project/dataset/d1",
+                                    pre_transform=AddSupernodes(concepts_list_ex))
+        \end{lstlisting}
+    \end{code}
+    \noindent
+    In this way we compute the preprocessing of the dataset only one time, then is loaded from the disk if the transformation is not changed.
+
+    \begin{remark}
+    The graphs both before and after the \texttt{AddSupernode} transformation are homogeneous graph, this means that all nodes are of the same type.\\
+    \end{remark}
+
+    \begin{remark}
+        Code in the folder \texttt{supernode/concepts}
+    \end{remark}
+
+    \section{Models}
+    In this section we present the different models architecture that we used to analyze the supernodes transformation.\\
+    To recap, Graph neural network for graph classification is usually composed of three parts:
+    \begin{enumerate}
+        \item Node embeddings: a sequence of graph convolutional layers that compute node embeddings.
+        \item Readout: a function that aggregates node embeddings into a graph embedding.
+        \item Classifier: a function that takes the graph embedding and computes the output.
+    \end{enumerate}
+
+    \noindent
+    We follow this structure for all the models that we implemented, but we added a new step at the beginning which works only if the data has been transformed, in other words if the graph contains the supernodes:
+    \begin{enumerate}
+        \setcounter{enumi}{-1}
+        \item Supernode embeddings: a graph convolutional layers that compute supernode embeddings.
+    \end{enumerate}
+
+    \vspace{0.4cm}
+    \noindent
+    To perform the Supernode embeddings operation on homogeneous graph we:
+    \begin{enumerate}
+        \item During the \texttt{AddSupernode} transformation set each supernode feature to \( [1] \), save a mask that tells which nodes are supernode \( S \) and a edge mask that tells if the edge contains one supernode \( edge\_S \)
+        \item During the forward pass of the model if the graph contains supernodes:
+            \begin{enumerate}
+                \item Execute the supernode convolution only with the edges \( edge\_S \) and save it to \( X_{2} \)
+                \item Update the original data using the mask: \( X[S] = X_{2}[S] \)
+            \end{enumerate}
+    \end{enumerate}
+
+    \noindent
+    This is the code in the \texttt{forward} method that we added to the model to perform the supernode embeddings operation:
+
+    \begin{code}[Model - Supernode Embeddings]
+        \noindent
+        \begin{lstlisting}
+if supernode_mask is not None:
+    # 0. compute supernode initial features
+    x2 = self.supconv(x, edge_index, edge_mask)
+    x[supernode_mask] = x2[supernode_mask]
+        \end{lstlisting}
+    \end{code}
+
+    \begin{remark}
+        Code of the various models is in the folder \texttt{supernode/models}
+    \end{remark}
+
+    \subsection{GCN}
+    \begin{definition}[Model - GCN]
+        The GCN model is built in the following way:
+        \begin{enumerate}
+        \setcounter{enumi}{-1}
+            \item Supernode embeddings: SimpleConv(add)
+            \item Node embeddings:
+                \begin{enumerate}
+                    \item GCNConv + relu
+                    \item GCNConv + relu
+                    \item GCNConv + relu
+                \end{enumerate}
+            \item Readout: global\_mean\_pool
+            \item Classifier: Multi-Layer Perception
+        \end{enumerate}
+    \end{definition}
+
+    \begin{code}[Model - GCN]
+        \noindent
+        \begin{lstlisting}
+class GCN(torch.nn.Module):
+    def __init__(self, num_node_features, hidden_channels, num_classes):
+        super(GCN, self).__init__()
+
+        self.supconv = SimpleConv("add")
+        self.conv1 = GCNConv(num_node_features, hidden_channels)
+        self.conv2 = GCNConv(hidden_channels, hidden_channels)
+        self.conv3 = GCNConv(hidden_channels, hidden_channels)
+        self.mlp = MLP([hidden_channels, hidden_channels, num_classes],
+                       norm=None, dropout=0.5)
+
+    def forward(self, x, edge_index, supernode_mask, edge_mask, batch):
+        if supernode_mask is not None:
+            # 0. compute supernode initial features
+            x2 = self.supconv(x, edge_index, edge_mask)
+            x[supernode_mask] = x2[supernode_mask]
+
+        # 1. Obtain node embeddings
+        x = self.conv1(x, edge_index)
+        x = x.relu()
+        x = self.conv2(x, edge_index)
+        x = x.relu()
+        x = self.conv3(x, edge_index)
+
+        # 2. Readout layer
+        x = global_add_pool(x, batch)
+
+        # 3. Apply a final classifier
+        return self.mlp(x)
+        \end{lstlisting}
+    \end{code}
+
+    \begin{definition}[MessagePassing - GCNConv]
+        The graph convolutional operator from the “Semi-supervised Classification with Graph Convolutional Networks” paper. Its node-wise formulation is given by:
+        \[
+            \mathbf{x}^{\prime}_i = \mathbf{\Theta}^{\top} \sum_{j \in \mathcal{N}(i) \cup \{ i \}} \frac{e_{j,i}}{\sqrt{\hat{d}_j \hat{d}_i}} \mathbf{x}_j
+        .\]
+        With \( \hat{d}_i = 1 + \sum_{j \in \mathcal{N}(i)} e_{j,i} \), where \( e_{j,i} \) denotes the edge weight from source node \( j \) to the target node \( i \).
+
+    \end{definition}
+
+    \subsection{GIN}
+    \begin{definition}[Model - GIN]
+        The GIN model is built in the following way:
+        \begin{enumerate}
+        \setcounter{enumi}{-1}
+            \item Supernode embeddings: SimpleConv(add)
+            \item Node embeddings:
+                \begin{enumerate}
+                    \item GINConv(MLP) + relu
+                    \item GINConv(MLP) + relu
+                    \item GINConv(MLP) + relu
+                \end{enumerate}
+            \item Readout: global\_add\_pool
+            \item Classifier: Multi-Layer Perception
+        \end{enumerate}
+    \end{definition}
+
+    \begin{code}[Model - GCN]
+        \noindent
+        \begin{lstlisting}
+class GIN(torch.nn.Module):
+    def __init__(self, in_channels, hidden_channels, num_classes, num_layers):
+        super().__init__()
+
+        self.supconv = SimpleConv("add")
+        self.convs = torch.nn.ModuleList()
+        for _ in range(num_layers):
+            mlp = MLP([in_channels, hidden_channels, hidden_channels])
+            self.convs.append(GINConv(nn=mlp, train_eps=False))
+            in_channels = hidden_channels
+
+        self.mlp = MLP([hidden_channels, hidden_channels, num_classes],
+                       norm=None, dropout=0.5)
+
+    def forward(self, x, edge_index, supernode_mask, edge_mask, batch):
+        if supernode_mask is not None:
+            # 0. compute supernode initial features
+            x2 = self.supconv(x, edge_index, edge_mask)
+            x[supernode_mask] = x2[supernode_mask]
+
+        # 1. Obtain node embeddings
+        for conv in self.convs:
+            x = conv(x, edge_index).relu()
+
+        # 2. Readout layer
+        x = global_add_pool(x, batch)
+
+        # 3. Apply a final classifier
+        return self.mlp(x)
+        \end{lstlisting}
+    \end{code}
+
+    \begin{definition}[MessagePassing - GINConv]
+        The graph isomorphism operator from the “How Powerful are Graph Neural Networks?” paper.
+        \[
+            \mathbf{x}^{\prime}_i = h_{\mathbf{\Theta}} \left( (1 + \epsilon) \cdot \mathbf{x}_i + \sum_{j \in \mathcal{N}(i)} \mathbf{x}_j \right)
+        .\]
+        here \( h_{\mathbf{\Theta}} \) denotes a neural network, .i.e. an MLP.
+
+    \end{definition}
+
+    \section{Experiments}
+
+    \subsubsection{Cycle Supernode} % (fold)
+    \label{sec:cycle_supernode}
+    The goal of this experiment is to use the \texttt{Dataset\_tree\_cycle}, which assigns the label to the graph based on whether it contains a cycle, and test if adding the supernodes in particular the one corresponding to the \texttt{cycle\_basis} concept help the models.\\
+
+    \noindent
+    \begin{tabular}{ |M{3cm}|M{3cm}|M{3cm}|M{3cm}|M{3cm}| }
+        \hline
+        \multicolumn{5}{|c|}{Dataset} \\
+        \hline
+        type & graph number & proportions & node number & cycle level \\
+        \hline
+        Dataset\_tree\_cycle & 10000 & 0.5 & 40 & 10\\
+        \hline
+    \end{tabular}
+
+    \vspace{0.5cm}
+
+    \noindent
+    \begin{tabular}{ |M{3cm}|M{3cm}|M{3cm}|M{3cm}|M{3cm}| }
+        \hline
+        \multicolumn{5}{|c|}{Models} \\
+        \hline
+        model name & supernode embeddings & node embeddings & readout & classifier \\
+        \hline
+        GCN1 & SimpleConv(Add) & 3 * (GCNConv(32) + relu) & global\_add\_pool & MLP(3L,32)\\
+        \hline
+        GIN1 & SimpleConv(Add) & 3 * (GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+        \hline
+    \end{tabular}
+
+    \vspace{0.5cm}
+    \noindent
+    For training all the models we used as criterion \texttt{CrossEntropyLoss} and as optimizer \texttt{Adam}, furthermore the dataloader uses a \texttt{batch\_size} of 60 graphs. \\
+
+    \noindent
+    \begin{tabular}{ |M{3cm}|M{3cm}|M{3cm}|M{3cm}|M{3cm}| }
+        \hline
+        \multicolumn{5}{|c|}{Results} \\
+        \hline
+        model & concepts & number of epoch & vanilla test accuracy & supernodes test accuracy \\
+        \hline
+        GCN1 & cycle\_basis, max\_cliques, line\_path(2) & 10 & 0.5000 & 1.0000\\
+        \hline
+        GIN1 & cycle\_basis, max\_cliques, line\_path(2) & 10 & 1.0000 & 0.9995\\
+        \hline
+    \end{tabular}
+
+    % subsubsection Cycle Supernode (end)
+
+    \section{Definitions}
+    In this section there are some useful definitions that we used previously.
+
+    \subsubsection{MessagePassing} % (fold)
+    \label{sec:messagepassing}
+
+    % subsubsection MessagePassing (end)
+
+    \begin{definition}[MessagePassing]
+        Message passing layers follow the form
+        \[
+            \mathbf{x}_i^{\prime} = \gamma_{\mathbf{\Theta}} \left( \mathbf{x}_i, \bigoplus_{j \in \mathcal{N}(i)} \, \phi_{\mathbf{\Theta}} \left(\mathbf{x}_i, \mathbf{x}_j,\mathbf{e}_{j,i}\right) \right),
+        \]
+        where \( \bigoplus \) denotes a differentiable, permutation invariant function, e.g., sum, mean, min, max or mul, and \( \gamma_{\mathbf{\Theta}} \) and \( \phi_{\mathbf{\Theta}} \) denote differentiable functions such as MLPs
+
+    \end{definition}
+
+    \begin{definition}[MessagePassing - SimpleConv]
+        A simple message passing operator that performs (non-trainable) propagation.
+        \[
+            \mathbf{x}^{\prime}_i = \bigoplus_{j \in \mathcal{N}(i) } e_{ji} \cdot \mathbf{x}_j
+        .\]
+        where \( \bigoplus \) defines a custom aggregation scheme (eg: \texttt{add}, \texttt{sum}, \texttt{mean}, \texttt{min}, \texttt{max}, \texttt{mul})
+
+    \end{definition}
+
+    \subsubsection{Activation} % (fold)
+    \label{sec:activation}
+
+    % subsubsection Activation (end)
+    \begin{definition}[Activation - relu]
+       Applies the rectified linear unit function element-wise:
+       \[
+        ReLU(x)=(x)^+=max(0,x)
+       .\]
+    \end{definition}
+
+    \subsubsection{Aggregation / Pooling} % (fold)
+    \label{sec:aggregation}
+
+    % subsubsection Aggregation (end)
+    \begin{definition}[Aggregation - global\_mean\_pool]
+        Returns batch-wise graph-level-outputs by averaging node features across the node dimension. For a single graph, its output is computed by
+        \[
+           \mathbf{r}_i = \frac{1}{N_i} \sum_{n=1}^{N_i} \mathbf{x}_n
+        .\]
+
+    \end{definition}
+
+    \begin{definition}[Aggregation - global\_add\_pool]
+        Returns batch-wise graph-level-outputs by averaging node features across the node dimension. For a single graph, its output is computed by
+        \[
+            \mathbf{r}_i = \sum_{n=1}^{N_i} \mathbf{x}_n
+        .\]
+
+    \end{definition}
+
+ %   \begin{definition}[Linear Layer]
+ %       Applies a linear transformation to the incoming data:
+ %       \[
+ %           y = xA^T + b
+ %       .\]
+
+ %   \end{definition}
+
+%    \subsection{GNN}
+%    \begin{definition}[Model - GNN]
+%        The GNN model is built in the following way:
+%        \begin{itemize}
+%            \item Node embeddings:
+%                \begin{enumerate}
+%                    \item GraphConv + relu
+%                    \item GraphConv + relu
+%                    \item GraphConv + relu
+%                \end{enumerate}
+%            \item Readout: global\_mean\_pool
+%            \item Classifier: linear layer with dropout
+%        \end{itemize}
+%    \end{definition}
+%
+%    \begin{code}[Model - GNN]
+%        \noindent
+%        \begin{lstlisting}
+%class GNN(torch.nn.Module):
+%    def __init__(self, num_node_features, hidden_channels, num_classes):
+%        super(GNN, self).__init__()
+%        torch.manual_seed(12345)
+%
+%        self.conv1 = GraphConv(num_node_features, hidden_channels)
+%        self.conv2 = GraphConv(hidden_channels, hidden_channels)
+%        self.conv3 = GraphConv(hidden_channels, hidden_channels)
+%        self.lin = Linear(hidden_channels, num_classes)
+%
+%    def forward(self, x, edge_index, batch):
+%        x = self.conv1(x, edge_index)
+%        x = x.relu()
+%        x = self.conv2(x, edge_index)
+%        x = x.relu()
+%        x = self.conv3(x, edge_index)
+%
+%        x = global_mean_pool(x, batch)
+%
+%        x = F.dropout(x, p=0.5, training=self.training)
+%        x = self.lin(x)
+%
+%        return x
+%
+%        \end{lstlisting}
+%    \end{code}
+%
+%    \begin{definition}[MessagePassing GraphConv]
+%        The graph neural network operator from the “Weisfeiler and Leman Go Neural: Higher-order Graph Neural Networks” paper.
+%        \[
+%            \mathbf{x}^{\prime}_i = \mathbf{W}_1 \mathbf{x}_i + \mathbf{W}_2 \sum_{j \in \mathcal{N}(i)} e_{j,i} \cdot \mathbf{x}_j
+%        .\]
+%        Where \( e_{j,i} \) denotes the edge weight from source node \( j \) to the target node \( i \).
+%
+%    \end{definition}
+
+\end{document}

@@ -1,0 +1,20 @@
+classifier: "MLP(in_channels=64,out_channels=2,channel_list=[64, 64, 2],num_layers=2,norm=ModuleList(\n\
+  \  (0): BatchNorm(64)\n),dropout=[0.5, 0.0])"
+concepts: '[{''name'': ''GCB'', ''fun'': <function cycle_basis at 0x7f4f35eb68e0>,
+  ''args'': []}, {''name'': ''GMC'', ''fun'': <function max_cliques at 0x7f4f35eb6840>,
+  ''args'': []}, {''name'': ''GLP2'', ''fun'': <function line_paths at 0x7f4f35eb6b60>,
+  ''args'': []}]'
+dataset: tree_cycle_transformed
+description: "\n                          Apply supconv first on supernode and then\
+  \ gnn,\n                          classifier and readout on all the nodes.\n   \
+  \                       "
+device: !!python/object/apply:torch.device
+- cuda
+epochs: 20
+gnn: GCN(in_channels=1,out_channels=64,hidden_channels=64,num_layer=3,dropout=Dropout(p=0.5,
+  inplace=False),jk=JumpingKnowledge(cat))
+loss: cross_entropy
+metric: MulticlassAccuracy
+model: GCNS2
+readout: global_add_pool
+supconv: SupConv(aggr=add)

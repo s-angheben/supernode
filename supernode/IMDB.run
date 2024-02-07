@@ -1,0 +1,77 @@
+IMDB-BINARY
+Using device: cuda
+Data(edge_index=[2, 146], y=[1], x=[20, 136], num_nodes=20)
+==============================================================
+Number of nodes: 20
+Number of edges: 146
+Average node degree: 7.30
+Has isolated nodes: False
+Has self-loops: False
+Is undirected: True
+GIN(
+  (supconv): SimpleConv()
+  (convs): ModuleList(
+    (0): GINConv(nn=MLP(136, 64, 64))
+    (1-2): 2 x GINConv(nn=MLP(64, 64, 64))
+  )
+  (mlp): MLP(64, 64, 2)
+)
+[0]Test Acc: 0.7300
+[1]Test Acc: 0.7200
+[2]Test Acc: 0.7800
+[3]Test Acc: 0.7700
+[4]Test Acc: 0.7500
+[5]Test Acc: 0.6500
+[6]Test Acc: 0.7400
+[7]Test Acc: 0.6900
+[8]Test Acc: 0.7000
+[9]Test Acc: 0.6900
+[10]Test Acc: 0.7100
+[11]Test Acc: 0.7100
+[12]Test Acc: 0.7800
+[13]Test Acc: 0.7100
+[14]Test Acc: 0.7200
+[15]Test Acc: 0.7300
+[16]Test Acc: 0.7300
+[17]Test Acc: 0.7400
+[18]Test Acc: 0.7300
+[19]Test Acc: 0.7600
+Average Test Acc: 0.7270
+[{'name': 'GCB', 'fun': <function cycle_basis at 0x7f139a8ed940>, 'args': [20]}, {'name': 'GMC', 'fun': <function max_cliques at 0x7f139a8ed8a0>, 'args': []}, {'name': 'GLP2', 'fun': <function line_paths at 0x7f139a5372e0>, 'args': [4]}]
+Data(x=[46, 136], edge_index=[2, 334], y=[1], ntype=[46], S=[46], edge_S=[334])
+==============================================================
+Number of nodes: 46
+Number of edges: 334
+Average node degree: 7.26
+Has isolated nodes: False
+Has self-loops: False
+Is undirected: True
+GIN(
+  (supconv): SimpleConv()
+  (convs): ModuleList(
+    (0): GINConv(nn=MLP(136, 64, 64))
+    (1-2): 2 x GINConv(nn=MLP(64, 64, 64))
+  )
+  (mlp): MLP(64, 64, 2)
+)
+[0]Test Acc: 0.6600
+[1]Test Acc: 0.6200
+[2]Test Acc: 0.6800
+[3]Test Acc: 0.6700
+[4]Test Acc: 0.6800
+[5]Test Acc: 0.6800
+[6]Test Acc: 0.7100
+[7]Test Acc: 0.7100
+[8]Test Acc: 0.7000
+[9]Test Acc: 0.6900
+[10]Test Acc: 0.7300
+[11]Test Acc: 0.7100
+[12]Test Acc: 0.7100
+[13]Test Acc: 0.7100
+[14]Test Acc: 0.6300
+[15]Test Acc: 0.7100
+[16]Test Acc: 0.7100
+[17]Test Acc: 0.7500
+[18]Test Acc: 0.7500
+[19]Test Acc: 0.7500
+Average Test Acc: 0.6980

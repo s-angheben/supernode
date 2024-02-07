@@ -1,0 +1,20 @@
+classifier: "MLP(in_channels=64,out_channels=2,channel_list=[64, 64, 2],num_layers=2,norm=ModuleList(\n\
+  \  (0): BatchNorm(64)\n),dropout=[0.5, 0.0])"
+concepts: '[{''name'': ''GCB'', ''fun'': <function cycle_basis at 0x7fa7cf6a6b60>,
+  ''args'': []}, {''name'': ''GMC'', ''fun'': <function max_cliques at 0x7fa7cf6a6ac0>,
+  ''args'': []}, {''name'': ''GLP2'', ''fun'': <function line_paths at 0x7fa7cf6a6de0>,
+  ''args'': []}]'
+dataset: MUTAG
+description: "\n                          Apply gnn on all nodes and then supconv\n\
+  \                          classifier and readout on all the nodes.\n          \
+  \                "
+device: !!python/object/apply:torch.device
+- cuda
+epochs: 300
+gnn: GIN(in_channels=7,out_channels=64,hidden_channels=64,num_layer=3,dropout=Dropout(p=0.5,
+  inplace=False),jk=JumpingKnowledge(cat))
+loss: cross_entropy
+metric: MulticlassAccuracy
+model: GINS2
+readout: global_add_pool
+supconv: SupConv(aggr=add)

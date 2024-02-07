@@ -1,0 +1,58 @@
+MUTAG
+Using device: cuda
+GCN(
+  (supconv): SimpleConv()
+  (conv1): GCNConv(7, 64)
+  (conv2): GCNConv(64, 64)
+  (conv3): GCNConv(64, 64)
+  (mlp): MLP(64, 64, 2)
+)
+[0]Test Acc: 0.6842
+[1]Test Acc: 0.6842
+[2]Test Acc: 0.6842
+[3]Test Acc: 0.6316
+[4]Test Acc: 0.6842
+[5]Test Acc: 0.7368
+[6]Test Acc: 0.7368
+[7]Test Acc: 0.6842
+[8]Test Acc: 0.6842
+[9]Test Acc: 0.7368
+[10]Test Acc: 0.6842
+[11]Test Acc: 0.7895
+[12]Test Acc: 0.6842
+[13]Test Acc: 0.6842
+[14]Test Acc: 0.8421
+[15]Test Acc: 0.6842
+[16]Test Acc: 0.7368
+[17]Test Acc: 0.7368
+[18]Test Acc: 0.6842
+[19]Test Acc: 0.7895
+Average Test Acc: 0.7132
+GCN(
+  (supconv): SimpleConv()
+  (conv1): GCNConv(7, 64)
+  (conv2): GCNConv(64, 64)
+  (conv3): GCNConv(64, 64)
+  (mlp): MLP(64, 64, 2)
+)
+[0]Test Acc: 0.6842
+[1]Test Acc: 0.7368
+[2]Test Acc: 0.6842
+[3]Test Acc: 0.6316
+[4]Test Acc: 0.7368
+[5]Test Acc: 0.7368
+[6]Test Acc: 0.7895
+[7]Test Acc: 0.7368
+[8]Test Acc: 0.7368
+[9]Test Acc: 0.7368
+[10]Test Acc: 0.7368
+[11]Test Acc: 0.7368
+[12]Test Acc: 0.6842
+[13]Test Acc: 0.6316
+[14]Test Acc: 0.7895
+[15]Test Acc: 0.7895
+[16]Test Acc: 0.6842
+[17]Test Acc: 0.7368
+[18]Test Acc: 0.6842
+[19]Test Acc: 0.7895
+Average Test Acc: 0.7237
