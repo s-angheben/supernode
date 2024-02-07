@@ -1,7 +1,7 @@
 import networkx as nx
 from torch_geometric.data import Dataset, InMemoryDataset
 from torch_geometric.utils import from_networkx
-from torch_geometric.datasets import TUDataset
+from torch_geometric.datasets import TUDataset, MoleculeNet
 from torch_geometric.loader import DataLoader
 import torch
 from typing import List
@@ -171,6 +171,42 @@ class MutagDataModule(L.LightningDataModule):
         return DataLoader(self.dataset[self.train_prop+self.val_prop:],
                           self.batch_size, num_workers=self.num_workers)
 
+
+
+class MoleculeHIVNetDataModule(L.LightningDataModule):
+    def __init__(self, data_dir, transform=None, pre_transform=None, pre_filter=None,
+                 batch_size=64, num_workers=4,
+                 train_prop=0.6, test_prop=0.2, val_prop=0.2):
+        super().__init__()
+        self.data_dir = data_dir
+        self.transform = transform
+        self.pre_transform = pre_transform
+        self.pre_filter = pre_filter
+        self.batch_size = batch_size
+        self.num_workers = num_workers
+        self.train_prop = train_prop
+        self.test_prop = test_prop
+        self.val_prop = val_prop
+
+
+    def setup(self, stage=None):
+        self.dataset = MoleculeNet(self.data_dir, name="HIV",
+                                 transform=self.transform,
+                                 pre_transform=self.pre_transform,
+                                 pre_filter=self.pre_filter)
+        self.dataset = self.dataset.shuffle()
+
+    def train_dataloader(self):
+        return DataLoader(self.dataset[:self.train_prop], self.batch_size,
+                          shuffle=True, num_workers=self.num_workers)
+
+    def val_dataloader(self):
+        return DataLoader(self.dataset[self.train_prop:self.train_prop+self.val_prop],
+                          self.batch_size, num_workers=self.num_workers)
+
+    def test_dataloader(self):
+        return DataLoader(self.dataset[self.train_prop+self.val_prop:],
+                          self.batch_size, num_workers=self.num_workers)
 
 
 

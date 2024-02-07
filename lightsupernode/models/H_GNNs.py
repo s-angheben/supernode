@@ -8,7 +8,7 @@ def get_HTEST_model(out_channels: int,
                     hidden_channels: int = 64, num_layers: int = 3,
                     dropout: float = 0.5):
         SConv = HeteroConv({
-            ('normal', 'void', 'normal'): SimpleConv('add'),
+            ('normal', 'identity', 'normal'): SimpleConv('add'),
             ('normal', 'toSup', 'supernodes'): SimpleConv('add'),
         })
 
