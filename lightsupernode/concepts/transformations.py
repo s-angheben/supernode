@@ -22,7 +22,7 @@ class AddSupernodes(BaseTransform):
         self.concepts_list = concepts_list
 
     def forward(self, data: Data) -> Data:
-        supernode_feature = [1.0] * data.num_features
+        supernode_feature = [0.0] * data.num_features
         G = to_networkx(data, to_undirected=True, node_attrs=["x"], graph_attrs=["y"])
         nx.set_node_attributes(G, "ORIG", "ntype")
 #        nx.set_node_attributes(G, [0], "N")
@@ -95,7 +95,7 @@ class AddSupernodesHetero(BaseTransform):
             toSup_edges = torch.Tensor((from_normal, to_sup)).long()
             toNor_edges = torch.Tensor((to_sup, from_normal)).long()
             #data_with_supernodes['supernodes'].x = torch.ones(len(found_concepts))
-            data_with_supernodes['supernodes'].x = torch.ones(len(found_concepts), data.num_features)
+            data_with_supernodes['supernodes'].x = torch.zeros(len(found_concepts), data.num_features)
             data_with_supernodes['normal', 'toSup', 'supernodes'].edge_index = toSup_edges
             data_with_supernodes['supernodes', 'toNor', 'normal'].edge_index = toNor_edges
 
@@ -145,7 +145,7 @@ class AddSupernodesHeteroMulti(BaseTransform):
 
                 toSup_edges = torch.Tensor((from_normal, to_sup)).long()
                 toNor_edges = torch.Tensor((to_sup, from_normal)).long()
-                data_with_supernodes[concept_name].x = torch.ones(len(comp), data.num_features)
+                data_with_supernodes[concept_name].x = torch.zeros(len(comp), data.num_features)
                 data_with_supernodes['normal', 'toSup', concept_name].edge_index = toSup_edges
                 data_with_supernodes[concept_name, 'toNor', 'normal'].edge_index = toNor_edges
                 t2 = torch.arange(len(comp))

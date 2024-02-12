@@ -36,7 +36,7 @@ concepts_list_ex = [
 path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list_ex))
 hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
 dm = Dataset_tree_cycle_module("./dataset/d1Mem-"+hash_name,
-                               dataset_path="/home/sam/Documents/network/project/dataset/d1",
+                               dataset_path="/home/sam/Documents/network/supernode/dataset/d1",
                                pre_transform=AddSupernodes(concepts_list_ex),
                                batch_size=60, train_prop=0.6, test_prop=0.2, val_prop=0.2)
 dm.setup()

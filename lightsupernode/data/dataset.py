@@ -10,9 +10,19 @@ import json
 import os.path as osp
 import lightning as L
 from .dataloader import create_dataloader
+from tqdm import tqdm
+import numpy as np
 
 class Dataset_tree_cycle(Dataset):
-    def __init__(self, root, dataset_path, transform=None, pre_transform=None, pre_filter=None, force_reload=False):
+    def __init__(
+            self,
+            root,
+            dataset_path,
+            transform=None,
+            pre_transform=None,
+            pre_filter=None,
+            force_reload=False
+        ):
         self.dataset_path = dataset_path
         with open(osp.join(dataset_path, "info.json")) as f:
             info_data = json.load(f)
@@ -207,6 +217,3 @@ class MoleculeHIVNetDataModule(L.LightningDataModule):
     def test_dataloader(self):
         return DataLoader(self.dataset[self.train_prop+self.val_prop:],
                           self.batch_size, num_workers=self.num_workers)
-
-
-
