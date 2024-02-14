@@ -23,10 +23,10 @@ import torch.nn.functional as F
 from torch_geometric.data import DataLoader, Data
 from torch_geometric.utils import degree
 from torch_geometric.utils.convert import from_networkx
-from torch_geometric.nn import GINConv, GINEConv, global_add_pool
+from torch_geometric.nn import GIN, MLP, global_add_pool
 import torch_geometric.transforms as T
 
-
+from models.gnn_normal import *
 
 NUM_RELABEL = 32
 P_NORM = 2
@@ -34,7 +34,7 @@ OUTPUT_DIM = 16
 EPSILON_MATRIX = 1e-7
 EPSILON_CMP = 1e-6
 SAMPLE_NUM = 400
-EPOCH = 20
+EPOCH = 60
 MARGIN = 0.0
 LEARNING_RATE = 1e-4
 THRESHOLD = 72.34
@@ -55,8 +55,12 @@ part_dict = {
     "Regular": (60, 160),
     "Extension": (160, 260),
     "CFI": (260, 360),
-    "4-Vertex_Condition": (360, 380),
-    "Distance_Regular": (380, 400),
+    "4-vertex_condition": (360, 380),
+    "distance_regular": (380, 400),
+}
+part_dict_reduced = {
+    "4-vertex_condition": (360, 380),
+    "distance_regular": (380, 400),
 }
 parser = argparse.ArgumentParser(description="BREC Test")
 
@@ -72,8 +76,8 @@ parser.add_argument("--MARGIN", type=float, default=MARGIN)
 parser.add_argument("--LOSS_THRESHOLD", type=float, default=LOSS_THRESHOLD)
 parser.add_argument("--device", type=int, default=0)
 
-parser.add_argument("--hidden_units", type=int, default=32)
-parser.add_argument("--num_layers", type=int, default=4)
+parser.add_argument("--hidden_units", type=int, default=64)
+parser.add_argument("--num_layers", type=int, default=6)
 
 # General settings.
 args = parser.parse_args()
@@ -152,85 +156,10 @@ def get_dataset(name, device):
 # Here is for model construction.
 def get_model(args, device):
     time_start = time.process_time()
-    num_features = 1
 
-    graph_classification = True
-    Conv = GINConv
-
-    class GIN(nn.Module):
-        def __init__(self):
-            super(GIN, self).__init__()
-
-            dim = args.hidden_units
-
-            self.num_layers = args.num_layers
-
-            self.convs = nn.ModuleList()
-            self.bns = nn.ModuleList()
-            self.fcs = nn.ModuleList()
-
-            self.convs.append(
-                Conv(
-                    nn.Sequential(
-                        nn.Linear(num_features, dim),
-                        nn.BatchNorm1d(dim),
-                        nn.ReLU(),
-                        nn.Linear(dim, dim),
-                    )
-                )
-            )
-            self.bns.append(nn.BatchNorm1d(dim))
-            self.fcs.append(nn.Linear(num_features, OUTPUT_DIM))
-            self.fcs.append(nn.Linear(dim, OUTPUT_DIM))
-
-            for i in range(self.num_layers - 1):
-                self.convs.append(
-                    Conv(
-                        nn.Sequential(
-                            nn.Linear(dim, dim),
-                            nn.BatchNorm1d(dim),
-                            nn.ReLU(),
-                            nn.Linear(dim, dim),
-                        )
-                    )
-                )
-                self.bns.append(nn.BatchNorm1d(dim))
-                self.fcs.append(nn.Linear(dim, OUTPUT_DIM))
-
-        def reset_parameters(self):
-            for m in self.modules():
-                if isinstance(m, nn.Linear):
-                    m.reset_parameters()
-                elif isinstance(m, Conv):
-                    m.reset_parameters()
-                elif isinstance(m, nn.BatchNorm1d):
-                    m.reset_parameters()
-
-        def forward(self, data):
-            x = data.x
-            edge_index = data.edge_index
-            batch = data.batch
-
-            outs = [x]
-            for i in range(self.num_layers):
-                x = self.convs[i](x, edge_index)
-                x = self.bns[i](x)
-                x = F.relu(x)
-                outs.append(x)
-
-            out = None
-            for i, x in enumerate(outs):
-                if graph_classification:
-                    x = global_add_pool(x, batch)
-                x = self.fcs[i](x)  # No dropout for these experiments
-                if out is None:
-                    out = x
-                else:
-                    out += x
-            return out
-
-    # Do something
-    model = GIN().to(device)
+#    model = get_GIN_normal(args, device, num_layers=6)
+    model = get_GAT_normal(args, device, num_layers=4)
+    model.to(device)
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
@@ -306,6 +235,7 @@ def evaluation(dataset, model, path, device, args):
                 * 2
             ]
             model.train()
+            e = 0
             for _ in range(EPOCH):
                 traintest_loader = torch_geometric.loader.DataLoader(
                     dataset_traintest, batch_size=BATCH_SIZE
@@ -323,10 +253,11 @@ def evaluation(dataset, model, path, device, args):
                     optimizer.step()
                     loss_all += len(pred) / 2 * loss.item()
                 loss_all /= NUM_RELABEL
+                e += 1
                 logger.info(f"Loss: {loss_all}")
-                if loss_all < LOSS_THRESHOLD:
-                    logger.info("Early Stop Here")
-                    break
+#                if loss_all < LOSS_THRESHOLD:
+#                    logger.info("Early Stop Here")
+#                    break
                 scheduler.step(loss_all)
 
             model.eval()
@@ -346,6 +277,7 @@ def evaluation(dataset, model, path, device, args):
                 cnt += 1
                 cnt_part += 1
                 correct_list.append(id)
+                print(f"Correct num in current part: {cnt_part}")
                 logger.info(f"Correct num in current part: {cnt_part}")
             if not reliability_flag:
                 fail_in_reliability += 1
@@ -387,7 +319,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "Model_Name"
+    NAME = "GAT"
     DATASET_NAME = "Dataset_Name"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
