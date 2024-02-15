@@ -1,7 +1,7 @@
 import torch
 from torch_geometric.nn import MLP, global_add_pool, HeteroConv, SimpleConv, GATConv
 
-def get_HGNN_simple(args, device, dropout=0.5, hidden_channels=64,
+def get_HGAT_simple(args, device, dropout=0.5, hidden_channels=64,
                    num_layers=4, out_channels=16):
     SConv = HeteroConv({
             ('normal', 'identity', 'normal'): SimpleConv('add'),
@@ -17,9 +17,9 @@ def get_HGNN_simple(args, device, dropout=0.5, hidden_channels=64,
         }, aggr='sum')
         HConvs.append(conv)
 
-    class HGNN_simple(torch.nn.Module):
+    class HGAT_simple(torch.nn.Module):
         def __init__(self):
-            super(HGNN_simple, self).__init__()
+            super(HGAT_simple, self).__init__()
             self.supinit = SConv
             self.convs = HConvs
             self.readout = global_add_pool
@@ -41,5 +41,6 @@ def get_HGNN_simple(args, device, dropout=0.5, hidden_channels=64,
             return x
 
 
-    model = HGNN_simple().to(device)
+    model = HGAT_simple().to(device)
     return model
+

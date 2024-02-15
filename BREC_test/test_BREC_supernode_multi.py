@@ -26,6 +26,9 @@ from torch_geometric.utils.convert import from_networkx
 from torch_geometric.nn import GIN, MLP, global_add_pool
 import torch_geometric.transforms as T
 
+import hashlib
+import os.path as osp
+
 from concepts.concepts import *
 from concepts.transformations import AddSupernodesHeteroMulti
 from models.gnn_hetero_multi import *
@@ -114,62 +117,68 @@ def pre_calculation(*args, **kwargs):
 
 # Stage 2: dataset construction
 # Here is for dataset construction, including data processing
-def get_dataset(name, device):
+def get_dataset(device):
     time_start = time.process_time()
 
     def makefeatures(data):
         data.x = torch.ones((data.num_nodes, 1))
-        data.id = torch.tensor(
-            np.random.permutation(np.arange(data.num_nodes))
-        ).unsqueeze(1)
-        return data
-
-    def addports(data):
-        data.ports = torch.zeros(data.num_edges, 1)
-        degs = degree(
-            data.edge_index[0], data.num_nodes, dtype=torch.long
-        )  # out degree of all nodes
-        for n in range(data.num_nodes):
-            deg = degs[n]
-            ports = np.random.permutation(int(deg))
-            for i, neighbor in enumerate(data.edge_index[1][data.edge_index[0] == n]):
-                nb = int(neighbor)
-                data.ports[
-                    torch.logical_and(
-                        data.edge_index[0] == n, data.edge_index[1] == nb
-                    ),
-                    0,
-                ] = float(ports[i])
         return data
 
     concepts_list_ex = [
            {"name": "GCB", "fun": cycle_basis, "args": [200]}, # max_num
            {"name": "GMC", "fun": max_cliques, "args": []},
-           {"name": "GLP2", "fun": line_paths, "args": []}
+#           {"name": "GLP2", "fun": line_paths, "args": []}
         ]
-    supnodes_names = [concept['name'] for concept in concepts_list_ex]
 
-    pre_transform = T.Compose([makefeatures, addports])
-    sup_transform = AddSupernodesHeteroMulti(concepts_list_ex)
-    # Do something
-    dataset = BRECDataset(dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
-                          name=name,
-                          pre_transform=pre_transform,
-                          transform=sup_transform)
+    path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list_ex))
+    hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
+    name = f"BREC_supernode_multi_precalc{hash_name}"
+
+    CHUNK_SIZE = 5000
+    DATASET_LEN = 51200
+
+    if not osp.exists(f'./Data/{name}'):
+        print("Constructing dataset")
+        dataset = BRECDataset(
+                dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
+                name=name,
+                pre_transform=makefeatures
+                )
+
+        transformed_dataset = [AddSupernodesHeteroMulti(concepts_list_ex)(data) for data in dataset]
+        os.makedirs(f'./Data/{name}')
+        for i in range(len(dataset) // CHUNK_SIZE + 1):
+            start_idx = i * CHUNK_SIZE
+            end_idx = min((i + 1) * CHUNK_SIZE, DATASET_LEN)
+            torch.save(
+                transformed_dataset[start_idx : end_idx],
+                f'./Data/{name}/transformed_dataset_chunk_{i}.pth',
+            )
+
+    loaded_dataset = []
+    num_chunks = DATASET_LEN // CHUNK_SIZE + 1
+    print("loading data")
+    for i in tqdm(range(num_chunks)):
+        chunk = torch.load(f'./Data/{name}/transformed_dataset_chunk_{i}.pth')
+        loaded_dataset.extend(chunk)
+
+    data1 = loaded_dataset[0]
+    supnodes_name = [concept['name'] for concept in concepts_list_ex]
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
     logger.info(f"dataset construction time cost: {time_cost}")
 
-    return dataset, supnodes_names
+    return loaded_dataset, supnodes_name, data1
 
 
 # Stage 3: model construction
 # Here is for model construction.
-def get_model(args, device, supnodes_name):
+def get_model(args, device, data1, supnodes_name):
     time_start = time.process_time()
 
-    model = get_HGNN_multi_simple(args, device, supnodes_name)
+#    model = get_HGAT_multi_simple(args, device, supnodes_name)
+    model = get_HGT_multi(args, device, data1, supnodes_name)
     model.to(device)
 
     time_end = time.process_time()
@@ -180,7 +189,7 @@ def get_model(args, device, supnodes_name):
 
 # Stage 4: evaluation
 # Here is for evaluation.
-def evaluation(dataset, supnodes_name, model, path, device, args):
+def evaluation(dataset, data1, supnodes_name, model, path, device, args):
     '''
         When testing on BREC, even on the same graph, the output embedding may be different,
         because numerical precision problem occur on large graphs, and even the same graph is permuted.
@@ -231,7 +240,7 @@ def evaluation(dataset, supnodes_name, model, path, device, args):
 
         for id in tqdm(range(part_range[0], part_range[1])):
             logger.info(f"ID: {id}")
-            model = get_model(args, device, supnodes_name)
+            model = get_model(args, device, data1, supnodes_name)
             optimizer = torch.optim.Adam(
                 model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY
             )
@@ -249,28 +258,28 @@ def evaluation(dataset, supnodes_name, model, path, device, args):
             model.train()
             e = 0
             for _ in range(EPOCH):
-                traintest_loader = torch_geometric.loader.DataLoader(
-                    dataset_traintest, batch_size=BATCH_SIZE
-                )
-                loss_all = 0
-                for data in traintest_loader:
-                    optimizer.zero_grad()
-                    pred = model(data.to(device))
-                    loss = loss_func(
-                        pred[0::2],
-                        pred[1::2],
-                        torch.tensor([-1] * (len(pred) // 2)).to(device),
-                    )
-                    loss.backward()
-                    optimizer.step()
-                    loss_all += len(pred) / 2 * loss.item()
-                loss_all /= NUM_RELABEL
-                e += 1
-                logger.info(f"Loss: {loss_all}")
-#                if loss_all < LOSS_THRESHOLD:
-#                    logger.info("Early Stop Here")
-#                    break
-                scheduler.step(loss_all)
+                 traintest_loader = torch_geometric.loader.DataLoader(
+                     dataset_traintest, batch_size=BATCH_SIZE
+                 )
+                 loss_all = 0
+                 for data in traintest_loader:
+                     optimizer.zero_grad()
+                     pred = model(data.to(device))
+                     loss = loss_func(
+                         pred[0::2],
+                         pred[1::2],
+                         torch.tensor([-1] * (len(pred) // 2)).to(device),
+                     )
+                     loss.backward()
+                     optimizer.step()
+                     loss_all += len(pred) / 2 * loss.item()
+                 loss_all /= NUM_RELABEL
+                 e += 1
+                 logger.info(f"Loss: {loss_all}")
+ #                if loss_all < LOSS_THRESHOLD:
+ #                    logger.info("Early Stop Here")
+ #                    break
+                 scheduler.step(loss_all)
 
             model.eval()
             T_square_traintest = T2_calculation(dataset_traintest, True)
@@ -330,8 +339,8 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "HGNN_simple_multi"
-    DATASET_NAME = "Dataset_Name"
+#    NAME = "HGNN_simple_multi"
+    NAME = "HGT_multi"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 
@@ -342,9 +351,9 @@ def main():
     logger.info(args)
 
     pre_calculation()
-    dataset, supnodes_name = get_dataset(name=DATASET_NAME, device=device)
-    model = get_model(args, device, supnodes_name)
-    evaluation(dataset, supnodes_name, model, OUT_PATH, device, args)
+    dataset, supnodes_name, data1 = get_dataset(device=device)
+    model = get_model(args, device, data1, supnodes_name)
+    evaluation(dataset, data1, supnodes_name, model, OUT_PATH, device, args)
 
 
 if __name__ == "__main__":

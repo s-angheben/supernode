@@ -89,8 +89,8 @@ class AddSupernodesHetero(BaseTransform):
         if current_supernode != 0:
             toSup_edges = torch.Tensor((from_normal, to_sup)).long()
             toNor_edges = torch.Tensor((to_sup, from_normal)).long()
-            #data_with_supernodes['supernodes'].x = torch.ones(len(found_concepts))
-            data_with_supernodes['supernodes'].x = torch.zeros(len(found_concepts), data.num_features)
+            data_with_supernodes['supernodes'].x = torch.ones(len(found_concepts), data.num_features)
+            #data_with_supernodes['supernodes'].x = torch.zeros(len(found_concepts), data.num_features)
             data_with_supernodes['normal', 'toSup', 'supernodes'].edge_index = toSup_edges
             data_with_supernodes['supernodes', 'toNor', 'normal'].edge_index = toNor_edges
 
@@ -110,10 +110,11 @@ class AddSupernodesHeteroMulti(BaseTransform):
     def forward(self, data: Data) -> HeteroData:
         data_with_supernodes = HeteroData({
             'normal'    : {'x' : data.x.float()},
-            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index, 'edge_attr' : data.edge_attr},
+#            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index, 'edge_attr' : data.edge_attr},
+            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index},
         })
         t1 = torch.arange(data.x.shape[0])
-        data_with_supernodes['normal', 'identity', 'normal'].edge_index = torch.stack([t1, t1], dim=0).long()
+#        data_with_supernodes['normal', 'identity', 'normal'].edge_index = torch.stack([t1, t1], dim=0).long()
 
         G = to_networkx(data, to_undirected=True, node_attrs=["x"])
 
@@ -135,11 +136,12 @@ class AddSupernodesHeteroMulti(BaseTransform):
 
                 toSup_edges = torch.Tensor((from_normal, to_sup)).long()
                 toNor_edges = torch.Tensor((to_sup, from_normal)).long()
-                data_with_supernodes[concept_name].x = torch.zeros(len(comp), data.num_features)
+                #data_with_supernodes[concept_name].x = torch.zeros(len(comp), data.num_features)
+                data_with_supernodes[concept_name].x = torch.ones(len(comp), data.num_features)
                 data_with_supernodes['normal', 'toSup', concept_name].edge_index = toSup_edges
                 data_with_supernodes[concept_name, 'toNor', 'normal'].edge_index = toNor_edges
                 t2 = torch.arange(len(comp))
-                data_with_supernodes[concept_name, 'identity', concept_name].edge_index = torch.stack([t2, t2], dim=0).long()
+#                data_with_supernodes[concept_name, 'identity', concept_name].edge_index = torch.stack([t2, t2], dim=0).long()
             else:
                 data_with_supernodes[concept_name].x = torch.zeros(1, data.num_features)
 

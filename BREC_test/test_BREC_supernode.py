@@ -26,6 +26,8 @@ from torch_geometric.utils.convert import from_networkx
 from torch_geometric.nn import GIN, MLP, global_add_pool
 import torch_geometric.transforms as T
 
+import hashlib
+
 from concepts.concepts import *
 from concepts.transformations import AddSupernodesHetero
 from models.gnn_hetero import *
@@ -114,32 +116,11 @@ def pre_calculation(*args, **kwargs):
 
 # Stage 2: dataset construction
 # Here is for dataset construction, including data processing
-def get_dataset(name, device):
+def get_dataset(device):
     time_start = time.process_time()
 
     def makefeatures(data):
         data.x = torch.ones((data.num_nodes, 1))
-        data.id = torch.tensor(
-            np.random.permutation(np.arange(data.num_nodes))
-        ).unsqueeze(1)
-        return data
-
-    def addports(data):
-        data.ports = torch.zeros(data.num_edges, 1)
-        degs = degree(
-            data.edge_index[0], data.num_nodes, dtype=torch.long
-        )  # out degree of all nodes
-        for n in range(data.num_nodes):
-            deg = degs[n]
-            ports = np.random.permutation(int(deg))
-            for i, neighbor in enumerate(data.edge_index[1][data.edge_index[0] == n]):
-                nb = int(neighbor)
-                data.ports[
-                    torch.logical_and(
-                        data.edge_index[0] == n, data.edge_index[1] == nb
-                    ),
-                    0,
-                ] = float(ports[i])
         return data
 
     concepts_list_ex = [
@@ -148,13 +129,16 @@ def get_dataset(name, device):
            {"name": "GLP2", "fun": line_paths, "args": []}
         ]
 
-    pre_transform = T.Compose([makefeatures, addports])
+    path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list_ex))
+    hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
+    name = f"BREC_supernode_{hash_name}"
+
     sup_transform = AddSupernodesHetero(concepts_list_ex)
+    pre_transform = T.Compose([makefeatures, sup_transform])
     # Do something
     dataset = BRECDataset(dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
                           name=name,
-                          pre_transform=pre_transform,
-                          transform=sup_transform)
+                          pre_transform=pre_transform)
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
@@ -168,7 +152,7 @@ def get_dataset(name, device):
 def get_model(args, device):
     time_start = time.process_time()
 
-    model = get_HGNN_simple(args, device)
+    model = get_HGAT_simple(args, device)
     model.to(device)
 
     time_end = time.process_time()
@@ -220,8 +204,8 @@ def evaluation(dataset, model, path, device, args):
     fail_in_reliability = 0
     loss_func = CosineEmbeddingLoss(margin=MARGIN)
 
-#    for part_name, part_range in part_dict.items():
-    for part_name, part_range in part_dict_reduced.items():
+    for part_name, part_range in part_dict.items():
+#    for part_name, part_range in part_dict_reduced.items():
         logger.info(f"{part_name} part starting ---")
 
         cnt_part = 0
@@ -329,8 +313,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "HGNN_simple"
-    DATASET_NAME = "Dataset_Name"
+    NAME = "HGNN_fixedsup"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 
@@ -341,7 +324,7 @@ def main():
     logger.info(args)
 
     pre_calculation()
-    dataset = get_dataset(name=DATASET_NAME, device=device)
+    dataset = get_dataset(device=device)
     model = get_model(args, device)
     evaluation(dataset, model, OUT_PATH, device, args)
 
