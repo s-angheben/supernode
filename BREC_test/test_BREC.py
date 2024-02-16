@@ -116,34 +116,12 @@ def get_dataset(name, device):
 
     def makefeatures(data):
         data.x = torch.ones((data.num_nodes, 1))
-        data.id = torch.tensor(
-            np.random.permutation(np.arange(data.num_nodes))
-        ).unsqueeze(1)
         return data
 
-    def addports(data):
-        data.ports = torch.zeros(data.num_edges, 1)
-        degs = degree(
-            data.edge_index[0], data.num_nodes, dtype=torch.long
-        )  # out degree of all nodes
-        for n in range(data.num_nodes):
-            deg = degs[n]
-            ports = np.random.permutation(int(deg))
-            for i, neighbor in enumerate(data.edge_index[1][data.edge_index[0] == n]):
-                nb = int(neighbor)
-                data.ports[
-                    torch.logical_and(
-                        data.edge_index[0] == n, data.edge_index[1] == nb
-                    ),
-                    0,
-                ] = float(ports[i])
-        return data
-
-    pre_transform = T.Compose([makefeatures, addports])
     # Do something
     dataset = BRECDataset(dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
                           name=name,
-                          pre_transform=pre_transform)
+                          pre_transform=makefeatures)
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
@@ -157,8 +135,8 @@ def get_dataset(name, device):
 def get_model(args, device):
     time_start = time.process_time()
 
-#    model = get_GIN_normal(args, device, num_layers=6)
-    model = get_GAT_normal(args, device, num_layers=4)
+    model = get_GIN_normal(args, device, num_layers=4)
+#    model = get_GAT_normal(args, device, num_layers=4)
     model.to(device)
 
     time_end = time.process_time()
@@ -319,8 +297,8 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "GAT"
-    DATASET_NAME = "Dataset_Name"
+    NAME = "GIN_normal1"
+    DATASET_NAME = "BREC_normal"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 

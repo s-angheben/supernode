@@ -27,6 +27,7 @@ from torch_geometric.nn import GIN, MLP, global_add_pool
 import torch_geometric.transforms as T
 
 import hashlib
+import os.path as osp
 
 from concepts.concepts import *
 from concepts.transformations import AddSupernodesHetero
@@ -131,20 +132,42 @@ def get_dataset(device):
 
     path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list_ex))
     hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
-    name = f"BREC_supernode_{hash_name}"
+    name_vanilla = f"BREC_{hash_name}"
+    name_transf = f"BREC_supernode_precalc{hash_name}"
 
-    sup_transform = AddSupernodesHetero(concepts_list_ex)
-    pre_transform = T.Compose([makefeatures, sup_transform])
-    # Do something
-    dataset = BRECDataset(dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
-                          name=name,
-                          pre_transform=pre_transform)
+    CHUNK_SIZE = 5000
+    DATASET_LEN = 51200
+
+    if not osp.exists(f'./Data/{name_transf}'):
+        print("Constructing dataset")
+        dataset = BRECDataset(
+                dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
+                name=name_vanilla,
+                pre_transform=makefeatures
+                )
+
+        transformed_dataset = [AddSupernodesHetero(concepts_list_ex)(data) for data in dataset]
+        os.makedirs(f'./Data/{name_transf}')
+        for i in range(len(dataset) // CHUNK_SIZE + 1):
+            start_idx = i * CHUNK_SIZE
+            end_idx = min((i + 1) * CHUNK_SIZE, DATASET_LEN)
+            torch.save(
+                transformed_dataset[start_idx : end_idx],
+                f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth',
+            )
+
+    loaded_dataset = []
+    num_chunks = DATASET_LEN // CHUNK_SIZE + 1
+    print("loading data")
+    for i in tqdm(range(num_chunks)):
+        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
+        loaded_dataset.extend(chunk)
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
     logger.info(f"dataset construction time cost: {time_cost}")
 
-    return dataset
+    return loaded_dataset
 
 
 # Stage 3: model construction
@@ -152,7 +175,10 @@ def get_dataset(device):
 def get_model(args, device):
     time_start = time.process_time()
 
-    model = get_HGAT_simple(args, device)
+#    model = get_HGAT_simple(args, device)
+#    model = get_HGIN_simple(args, device)
+#    model = get_HGIN_norm(args, device)
+    model = get_HGCN_simple(args, device)
     model.to(device)
 
     time_end = time.process_time()
@@ -313,7 +339,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "HGNN_fixedsup"
+    NAME = "HGCN_simple"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 

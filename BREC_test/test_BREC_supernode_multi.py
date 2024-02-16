@@ -132,34 +132,35 @@ def get_dataset(device):
 
     path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list_ex))
     hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
-    name = f"BREC_supernode_multi_precalc{hash_name}"
+    name_vanilla = f"BREC_{hash_name}"
+    name_transf = f"BREC_supernode_multi_precalc{hash_name}"
 
     CHUNK_SIZE = 5000
     DATASET_LEN = 51200
 
-    if not osp.exists(f'./Data/{name}'):
+    if not osp.exists(f'./Data/{name_transf}'):
         print("Constructing dataset")
         dataset = BRECDataset(
                 dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
-                name=name,
+                name=name_vanilla,
                 pre_transform=makefeatures
                 )
 
         transformed_dataset = [AddSupernodesHeteroMulti(concepts_list_ex)(data) for data in dataset]
-        os.makedirs(f'./Data/{name}')
+        os.makedirs(f'./Data/{name_transf}')
         for i in range(len(dataset) // CHUNK_SIZE + 1):
             start_idx = i * CHUNK_SIZE
             end_idx = min((i + 1) * CHUNK_SIZE, DATASET_LEN)
             torch.save(
                 transformed_dataset[start_idx : end_idx],
-                f'./Data/{name}/transformed_dataset_chunk_{i}.pth',
+                f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth',
             )
 
     loaded_dataset = []
     num_chunks = DATASET_LEN // CHUNK_SIZE + 1
     print("loading data")
     for i in tqdm(range(num_chunks)):
-        chunk = torch.load(f'./Data/{name}/transformed_dataset_chunk_{i}.pth')
+        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
         loaded_dataset.extend(chunk)
 
     data1 = loaded_dataset[0]
@@ -178,7 +179,8 @@ def get_model(args, device, data1, supnodes_name):
     time_start = time.process_time()
 
 #    model = get_HGAT_multi_simple(args, device, supnodes_name)
-    model = get_HGT_multi(args, device, data1, supnodes_name)
+#    model = get_HGT_multi(args, device, data1, supnodes_name)
+    model = get_HGIN_multi_simple(args, device, supnodes_name)
     model.to(device)
 
     time_end = time.process_time()
@@ -340,7 +342,7 @@ def main():
 
     OUT_PATH = "result_BREC"
 #    NAME = "HGNN_simple_multi"
-    NAME = "HGT_multi"
+    NAME = "HGIN_multi_simple"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 

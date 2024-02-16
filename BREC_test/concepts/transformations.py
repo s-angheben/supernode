@@ -110,11 +110,11 @@ class AddSupernodesHeteroMulti(BaseTransform):
     def forward(self, data: Data) -> HeteroData:
         data_with_supernodes = HeteroData({
             'normal'    : {'x' : data.x.float()},
-#            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index, 'edge_attr' : data.edge_attr},
-            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index},
+            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index, 'edge_attr' : data.edge_attr},
+#            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index},
         })
         t1 = torch.arange(data.x.shape[0])
-#        data_with_supernodes['normal', 'identity', 'normal'].edge_index = torch.stack([t1, t1], dim=0).long()
+        data_with_supernodes['normal', 'identity', 'normal'].edge_index = torch.stack([t1, t1], dim=0).long()
 
         G = to_networkx(data, to_undirected=True, node_attrs=["x"])
 
@@ -141,7 +141,7 @@ class AddSupernodesHeteroMulti(BaseTransform):
                 data_with_supernodes['normal', 'toSup', concept_name].edge_index = toSup_edges
                 data_with_supernodes[concept_name, 'toNor', 'normal'].edge_index = toNor_edges
                 t2 = torch.arange(len(comp))
-#                data_with_supernodes[concept_name, 'identity', concept_name].edge_index = torch.stack([t2, t2], dim=0).long()
+                data_with_supernodes[concept_name, 'identity', concept_name].edge_index = torch.stack([t2, t2], dim=0).long()
             else:
                 data_with_supernodes[concept_name].x = torch.zeros(1, data.num_features)
 
