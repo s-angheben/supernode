@@ -23,11 +23,11 @@ class AddSupernodes(BaseTransform):
 
     def forward(self, data: Data) -> Data:
         supernode_feature = [0.0] * data.num_features
-        G = to_networkx(data, to_undirected=True, node_attrs=["x"], graph_attrs=["y"])
+        G = to_networkx(data, to_undirected=True, node_attrs=["x"])
         nx.set_node_attributes(G, "ORIG", "ntype")
 #        nx.set_node_attributes(G, [0], "N")
         nx.set_node_attributes(G, 0, "S")
-        nx.set_edge_attributes(G, [0.0], "S")
+        nx.set_edge_attributes(G, [1.0], "S")
 
         # find all the concepts in the graph on the original graph only
         for concept in self.concepts_list:
