@@ -348,7 +348,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "TGIN_Sadd_maxcliques300"
+    NAME = "TGIN_Sadd_maxcliques2"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 
