@@ -33,6 +33,8 @@ from concepts.concepts import *
 from concepts.transformations import AddSupernodes
 from models.gnn_supernode_normal import *
 
+torch_geometric.seed_everything(1234)
+
 NUM_RELABEL = 32
 P_NORM = 2
 OUTPUT_DIM = 16
@@ -124,42 +126,50 @@ def get_dataset(device):
         data.x = torch.ones((data.num_nodes, 1))
         return data
 
+    def makefeatures_type(data):
+        data.x = torch.tensor([1.0, 0.0, 0.0]).repeat(data.num_nodes, 1)
+        return data
+
     concepts_list_ex = [
-           {"name": "GCB", "fun": cycle_basis, "args": [200]}, # max_num
-           {"name": "GMC", "fun": max_cliques, "args": []},
+           {"name": "GCB", "fun": cycle_basis, "args": [200], "features" : torch.tensor([0.0,1.0,0.0])}, # max_num
+           {"name": "GMC", "fun": max_cliques, "args": [],    "features" : torch.tensor([0.0,0.0,1.0])}
         ]
 
     path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list_ex))
     hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
     name_vanilla = f"BREC_{hash_name}"
     name_transf = f"BREC_supernode_normal_precalc{hash_name}"
+#    name_vanilla = f"BREC_typef_{hash_name}"
+#    name_transf = f"BREC_typef_supernode_normal_precalc{hash_name}"
 
     CHUNK_SIZE = 5000
     DATASET_LEN = 51200
 
-    if not osp.exists(f'./Data/{name_transf}'):
-        print("Constructing dataset")
-        dataset = BRECDataset(
-                dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
-                name=name_vanilla,
-                pre_transform=makefeatures
-                )
-
-        transformed_dataset = [AddSupernodes(concepts_list_ex)(data) for data in dataset]
-        os.makedirs(f'./Data/{name_transf}')
-        for i in range(len(dataset) // CHUNK_SIZE + 1):
-            start_idx = i * CHUNK_SIZE
-            end_idx = min((i + 1) * CHUNK_SIZE, DATASET_LEN)
-            torch.save(
-                transformed_dataset[start_idx : end_idx],
-                f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth',
-            )
+#    if not osp.exists(f'./Data/{name_transf}'):
+#        print("Constructing dataset")
+#        dataset = BRECDataset(
+#                dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
+#                name=name_vanilla,
+#                pre_transform=makefeatures
+##                pre_transform=makefeatures_type
+#                )
+#
+#        transformed_dataset = [AddSupernodes(concepts_list_ex)(data) for data in dataset]
+#        os.makedirs(f'./Data/{name_transf}')
+#        for i in range(len(dataset) // CHUNK_SIZE + 1):
+#            start_idx = i * CHUNK_SIZE
+#            end_idx = min((i + 1) * CHUNK_SIZE, DATASET_LEN)
+#            torch.save(
+#                transformed_dataset[start_idx : end_idx],
+#                f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth',
+#            )
 
     loaded_dataset = []
     num_chunks = DATASET_LEN // CHUNK_SIZE + 1
     print("loading data")
     for i in tqdm(range(num_chunks)):
-        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
+#        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
+        chunk = torch.load(f'./Data/TBREC_supernode_normal_precalc_max_cliques/transformed_dataset_chunk_{i}.pth')
         loaded_dataset.extend(chunk)
 
     time_end = time.process_time()
@@ -174,9 +184,10 @@ def get_dataset(device):
 def get_model(args, device):
     time_start = time.process_time()
 
-#    model = get_GIN_Sadd(args, device)
+    model = get_GIN_Sadd(args, device)
 #    model = get_GAT_Sadd(args, device)
-    model = get_GIN_SGIN(args, device)
+#    model = get_GIN_SGIN(args, device)
+#    model = get_GIN_SGIN_noSINIT(args, device)
     model.to(device)
 
     time_end = time.process_time()
@@ -337,7 +348,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "GIN_SGIN"
+    NAME = "TGIN_Sadd_maxcliques300"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 

@@ -1,0 +1,8 @@
+2024-02-20 21:43:53.467 | INFO     | __main__:main:359 - Namespace(P_NORM='2', EPOCH=60, LEARNING_RATE=0.0001, BATCH_SIZE=16, WEIGHT_DECAY=0.0001, OUTPUT_DIM=16, SEED=2023, THRESHOLD=72.34, MARGIN=0.0, LOSS_THRESHOLD=0.2, device=0, hidden_units=64, num_layers=6)
+2024-02-20 21:43:53.468 | INFO     | __main__:pre_calculation:117 - pre-calculation time cost: 0.0
+2024-02-20 21:44:05.324 | INFO     | __main__:get_dataset:177 - dataset construction time cost: 11.79
+2024-02-20 21:44:05.622 | INFO     | __main__:get_model:195 - model construction time cost: 0.19
+2024-02-20 21:44:05.623 | INFO     | __main__:evaluation:244 - Basic part starting ---
+2024-02-20 21:44:05.623 | INFO     | __main__:evaluation:251 - ID: 0
+2024-02-20 21:44:05.635 | INFO     | __main__:get_model:195 - model construction time cost: 0.01
+2024-02-20 21:44:06.319 | INFO     | __main__:evaluation:287 - Loss: 0.05444670305587351

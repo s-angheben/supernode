@@ -33,6 +33,8 @@ from concepts.concepts import *
 from concepts.transformations import AddSupernodesHetero
 from models.gnn_hetero import *
 
+torch_geometric.seed_everything(1234)
+
 NUM_RELABEL = 32
 P_NORM = 2
 OUTPUT_DIM = 16

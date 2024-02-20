@@ -1,0 +1,46 @@
+Dataset statistics:
+Basic                N_nodes_mean=   10.0000   N_edges=   26.0000      node_degree=2.6
+Regular              N_nodes_mean=   35.0000   N_edges=  630.0000      node_degree=18.0
+Extension            N_nodes_mean=   11.0000   N_edges=   60.0000      node_degree=5.454545454545454
+CFI                  N_nodes_mean=  136.0000   N_edges=  824.0000      node_degree=6.0588235294117645
+4-vertex_condition   N_nodes_mean=   63.0000   N_edges= 1890.0000      node_degree=30.0
+distance_regular     N_nodes_mean=   32.0000   N_edges=  320.0000      node_degree=10.0
+
+
+concepts statistics:
+
+Concept:  cycle_basis
+         Basic                mean=   26.0437   var=  168.5425  max=77  min=5
+         Regular              mean=  163.3595   var=18090.1378  max=300 min=6
+         Extension            mean=   25.0131   var=  151.7667  max=72  min=2
+         CFI                  mean=  255.2495   var= 7415.1246  max=300 min=1
+         4-vertex_condition   mean=  300.0000   var=    0.0000  max=300 min=300
+         distance_regular     mean=  300.0000   var=    0.0000  max=300 min=300
+Concept:  max_cliques
+         Basic                mean=    8.0167   var=   10.9526  max=17  min=1
+         Regular              mean=   90.7750   var= 9779.3224  max=488 min=0
+         Extension            mean=    8.6750   var=   18.4323  max=18  min=0
+         CFI                  mean=    0.0000   var=    0.0000  max=0   min=0
+         4-vertex_condition   mean= 1089.2000   var=27563.8943  max=1447        min=775
+         distance_regular     mean=    3.1500   var=  188.6749  max=63  min=0
+Concept:  line_pahts
+         Basic                mean=    0.8000   var=    1.4604  max=6   min=0
+         Regular              mean=    0.0000   var=    0.0000  max=0   min=0
+         Extension            mean=    0.6300   var=    1.0333  max=4   min=0
+         CFI                  mean=    4.0850   var=    6.4288  max=10  min=0
+         4-vertex_condition   mean=    0.0000   var=    0.0000  max=0   min=0
+         distance_regular     mean=    0.0000   var=    0.0000  max=0   min=0
+Concept:  k_edge_comp
+         Basic                mean=    1.0000   var=    0.0000  max=1   min=1
+         Regular              mean=    1.0050   var=    0.0050  max=2   min=1
+         Extension            mean=    1.0100   var=    0.0099  max=2   min=1
+         CFI                  mean=    1.0150   var=    0.0148  max=2   min=1
+         4-vertex_condition   mean=    1.0000   var=    0.0000  max=1   min=1
+         distance_regular     mean=    1.0000   var=    0.0000  max=1   min=1
+Concept:  constell
+         Basic                mean=    0.0333   var=    0.0656  max=2   min=0
+         Regular              mean=    0.0000   var=    0.0000  max=0   min=0
+         Extension            mean=    0.0000   var=    0.0000  max=0   min=0
+         CFI                  mean=    0.0000   var=    0.0000  max=0   min=0
+         4-vertex_condition   mean=    0.0000   var=    0.0000  max=0   min=0
+         distance_regular     mean=    0.0000   var=    0.0000  max=0   min=0

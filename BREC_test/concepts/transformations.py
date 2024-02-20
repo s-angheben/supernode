@@ -22,7 +22,8 @@ class AddSupernodes(BaseTransform):
         self.concepts_list = concepts_list
 
     def forward(self, data: Data) -> Data:
-        supernode_feature = [0.0] * data.num_features
+
+        supernode_feature_default = [0.0] * data.num_features
         G = to_networkx(data, to_undirected=True, node_attrs=["x"])
         nx.set_node_attributes(G, "ORIG", "ntype")
 #        nx.set_node_attributes(G, [0], "N")
@@ -34,6 +35,10 @@ class AddSupernodes(BaseTransform):
             concept["concepts_nodes"] = concept["fun"](G, *concept["args"])
 
         for concept in self.concepts_list:
+            if "features" in concept:
+                supernode_feature = concept["features"]
+            else:
+                supernode_feature = supernode_feature_default
             add_supernode_normal(G, concept["concepts_nodes"], concept["name"], supernode_feature)
 
         data_with_supernodes = from_networkx(G)

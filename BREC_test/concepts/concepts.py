@@ -16,7 +16,7 @@ def max_cliques(G):
 #def cycle_basis(G):
 #    return nx.cycle_basis(G, 0)
 
-def cycle_basis(G, max_num=None):
+def cycle_basis(G, max_num=300):
     all_cycles = []
     all_cycles_set = set()
     for node in G.nodes():
@@ -80,14 +80,14 @@ def line_paths(G):
 ##########################
 
 # Generates nodes in each maximal k-edge-connected component in G.
-def k_edge_comp(G, k=2):
-    return [comp for comp in sorted(map(sorted, nx.k_edge_components(G, k))) if len(comp) > 2]
+def k_edge_comp(G, max_num=300, k=2):
+    return [comp for comp in sorted(map(sorted, nx.k_edge_components(G, k))) if len(comp) > 2][:max_num]
 
 #A k-component is a maximal subgraph of a graph G that has, at least, node connectivity k: we need to remove at least k nodes
 #to break it into more components. k-components have an inherent hierarchical structure because they are nested in terms of connectivity:
 #a connected graph can contain several 2-components, each of which can contain one or more 3-components, and so forth.
-def k_comp(G):
-    return [list(comp[0]) for comp in nx.k_components(G).values()]
+def k_comp(G, max_num=300):
+    return [list(comp[0]) for comp in nx.k_components(G).values()][:max_num]
 
 
 ##########################
@@ -102,18 +102,18 @@ def _star_rec(G, node, visited, layer):
         _star_rec(G, neighbors, visited, layer-1)
     return list(visited)
 
-def star(G, n):
+def star(G, n=2, max_num=300):
     stars = []
     for node in nx.nodes(G):
         stars.append(_star_rec(G, node, set(), n+1))
-    return stars
+    return stars[:max_num]
 
 
 ##########################
 ## Star constellation
 ##########################
 
-def stars_constellation(G, min_degree=1, max_exception=1):
+def stars_constellation(G, min_degree=1, max_exception=1, max_num=300):
     stars_constellation = []
     for node in nx.nodes(G):
         node_degree = len(list(nx.neighbors(G, node)))
@@ -126,6 +126,6 @@ def stars_constellation(G, min_degree=1, max_exception=1):
         #print(node, node_degree, valid_neig, const_degree, const_exception)
         #print(node, [(neig, len(list(nx.neighbors(G, neig)))) for neig in list(nx.neighbors(G, node)) if len(list(nx.neighbors(G, neig)))==1])
         #print(node, [(neig, len(list(nx.neighbors(G, neig)))) for neig in list(nx.neighbors(G, node)) if len(list(nx.neighbors(G, neig))) > min_degree])
-    return stars_constellation
+    return stars_constellation[:max_num]
 
 

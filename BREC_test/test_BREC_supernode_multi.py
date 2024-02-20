@@ -33,6 +33,8 @@ from concepts.concepts import *
 from concepts.transformations import AddSupernodesHeteroMulti
 from models.gnn_hetero_multi import *
 
+torch_geometric.seed_everything(1234)
+
 NUM_RELABEL = 32
 P_NORM = 2
 OUTPUT_DIM = 16
@@ -134,6 +136,8 @@ def get_dataset(device):
     hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
     name_vanilla = f"BREC_{hash_name}"
     name_transf = f"BREC_supernode_multi_precalc{hash_name}"
+#    name_vanilla = f"BREC_onehotdegree{hash_name}"
+#    name_transf = f"BREC_supernode_multi_precalc_onehotdegree{hash_name}"
 
     CHUNK_SIZE = 5000
     DATASET_LEN = 51200
@@ -144,6 +148,7 @@ def get_dataset(device):
                 dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
                 name=name_vanilla,
                 pre_transform=makefeatures
+#                pre_transform=T.OneHotDegree(max_degree=16)
                 )
 
         transformed_dataset = [AddSupernodesHeteroMulti(concepts_list_ex)(data) for data in dataset]
@@ -180,8 +185,8 @@ def get_model(args, device, data1, supnodes_name):
 
 #    model = get_HGAT_multi_simple(args, device, supnodes_name)
 #    model = get_HGT_multi(args, device, data1, supnodes_name)
-#    model = get_HGIN_multi_simple(args, device, supnodes_name)
-    model = get_HGIN_multi_all(args, device, supnodes_name)
+    model = get_HGIN_multi_simple(args, device, supnodes_name)
+#    model = get_HGIN_multi_all(args, device, supnodes_name)
     model.to(device)
 
     time_end = time.process_time()
@@ -342,8 +347,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-#    NAME = "HGNN_simple_multi"
-    NAME = "HGIN_multi_all"
+    NAME = "HGIN_simple_test"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 
