@@ -129,3 +129,105 @@ def stars_constellation(G, min_degree=1, max_exception=1, max_num=300):
     return stars_constellation[:max_num]
 
 
+##########################
+## max linepath
+##########################
+
+def max_lines(G):
+    max_degree = 0
+    node_degree_l = []
+    for node in G.nodes():
+        node_degree = G.degree[node]
+        node_degree_l.append((node, node_degree))
+        if max_degree < node_degree:
+            max_degree = node_degree
+
+    max_nodes = [node for (node, node_degree) in node_degree_l if node_degree == max_degree]
+
+    paths = []
+    for i, source in enumerate(max_nodes):
+        for target in max_nodes[i:]:
+            if source != target:
+                try:
+                    shortest_path = nx.shortest_path(G, source=source, target=target)
+                    paths.append(shortest_path)
+                except:
+                    pass
+
+    if len(paths) == 0:
+        return [[]]
+    return paths
+
+
+
+##########################
+## min linepath
+##########################
+
+def min_lines(G, min_degree=3):
+    node_degree_l = []
+    for node in G.nodes():
+        node_degree = G.degree[node]
+        node_degree_l.append((node, node_degree))
+
+    min_nodes = [node for (node, node_degree) in node_degree_l if node_degree <= min_degree]
+
+    paths = []
+    for i, source in enumerate(min_nodes):
+        for target in min_nodes[i:]:
+            if source != target:
+                try:
+                    shortest_path = nx.shortest_path(G, source=source, target=target)
+                    paths.append(shortest_path)
+                except:
+                    pass
+
+    if len(paths) == 0:
+        return [[]]
+    return paths
+
+
+##########################
+## K-core
+##########################
+
+def k_core(G):
+    k_core_dict = nx.core_number(G)
+
+    result = {}
+    for key, value in k_core_dict.items():
+        if value not in result:
+            result[value] = []
+        result[value].append(key)
+
+    result_lists = list(result.values())
+    return result_lists
+
+##########################
+## degree_centrality
+##########################
+
+def degree_centrality(G):
+    degree_dict = nx.degree_centrality(G)
+    rounded_data = {key: round(value, 3) for key, value in degree_dict.items()}
+
+    result = {}
+    for key, value in rounded_data.items():
+        if value not in result:
+            result[value] = []
+        result[value].append(key)
+
+    result_lists = list(result.values())
+    return result_lists
+
+
+##########################
+## community modularity
+##########################
+
+def comm_modularity(G):
+#    comm = nx.community.naive_greedy_modularity_communities(G)
+    comm = nx.community.greedy_modularity_communities(G)
+
+    list_comm = [list(s) for s in comm]
+    return list_comm

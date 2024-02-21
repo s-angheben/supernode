@@ -54,19 +54,25 @@ def main():
             )
 
     concepts_list = [
-          ( "cycle_basis", [ {"name": "GCB", "fun": cycle_basis, "args": []}            ]),
-          ( "max_cliques", [ {"name": "GMC", "fun": max_cliques, "args": []}            ]),
-          ( "line_pahts" , [ {"name": "GLP2", "fun": line_paths, "args": []}            ]),
-          ( "k_edge_comp", [ {"name": "kecomp", "fun": k_edge_comp, "args": []}         ]),
-          ( "constell",    [ {"name": "const", "fun": stars_constellation, "args": []}  ]),
-          ( "cyclebasis_and_maxcliques", [ {"name": "GCB", "fun": cycle_basis, "args": []},
-                                           {"name": "GMC", "fun": max_cliques, "args": []} ]),
+#          ( "cycle_basis", [ {"name": "GCB", "fun": cycle_basis, "args": []}            ]),
+#          ( "max_cliques", [ {"name": "GMC", "fun": max_cliques, "args": []}            ]),
+#          ( "line_pahts" , [ {"name": "GLP2", "fun": line_paths, "args": []}            ]),
+#          ( "k_edge_comp", [ {"name": "kecomp", "fun": k_edge_comp, "args": []}         ]),
+#          ( "constell",    [ {"name": "const", "fun": stars_constellation, "args": []}  ]),
+#          ( "cyclebasis_and_maxcliques", [ {"name": "GCB", "fun": cycle_basis, "args": []},
+#                                           {"name": "GMC", "fun": max_cliques, "args": []} ]),
+
+#          ( "maxnode_lines", [{"name": "maxline", "fun": max_lines, "args": []}]  ),
+#          ( "minnode_lines", [{"name": "minline", "fun": min_lines, "args": []}]  ),
+#          ( "k_core", [{"name": "k_core", "fun": k_core, "args": []}]  ),
+#          ( "degree_centrality", [{"name": "deg_cent", "fun": degree_centrality, "args": []}]  ),
+          ( "comm_modul", [{"name": "comm_mod", "fun": comm_modularity, "args": []}]  ),
         ]
 
     procs = []
     for name, concept in concepts_list:
 #        name_transf = f"TBREC_supernode_normal_precalc_{name}"
-        #proc = Process(target=create_concept_dataset_normal, args=(dataset, concept, name_transf))
+#        proc = Process(target=create_concept_dataset_normal, args=(dataset, concept, name_transf))
 
         name_transf = f"TBREC_supernode_multi_precalc_{name}"
         proc = Process(target=create_concept_dataset_multi, args=(dataset, concept, name_transf))

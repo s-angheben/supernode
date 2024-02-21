@@ -41,7 +41,7 @@ OUTPUT_DIM = 16
 EPSILON_MATRIX = 1e-7
 EPSILON_CMP = 1e-6
 SAMPLE_NUM = 400
-EPOCH = 60
+EPOCH = 100
 MARGIN = 0.0
 LEARNING_RATE = 1e-4
 THRESHOLD = 72.34
@@ -169,7 +169,7 @@ def get_dataset(device):
     print("loading data")
     for i in tqdm(range(num_chunks)):
 #        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
-        chunk = torch.load(f'./Data/TBREC_supernode_normal_precalc_max_cliques/transformed_dataset_chunk_{i}.pth')
+        chunk = torch.load(f'./Data/TBREC_supernode_normal_precalc_cyclebasis_and_maxcliques/transformed_dataset_chunk_{i}.pth')
         loaded_dataset.extend(chunk)
 
     time_end = time.process_time()
@@ -184,10 +184,10 @@ def get_dataset(device):
 def get_model(args, device):
     time_start = time.process_time()
 
-    model = get_GIN_Sadd(args, device)
+#    model = get_GIN_Sadd(args, device)
 #    model = get_GAT_Sadd(args, device)
 #    model = get_GIN_SGIN(args, device)
-#    model = get_GIN_SGIN_noSINIT(args, device)
+    model = get_GIN_SGIN_noSINIT(args, device)
     model.to(device)
 
     time_end = time.process_time()
@@ -348,7 +348,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "TGIN_Sadd_maxcliques2"
+    NAME = "TGIN_SGIN_NoSINIT_maxcliques_and_cyclebasis100"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 

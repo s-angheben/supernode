@@ -44,3 +44,38 @@ Concept:  constell
          CFI                  mean=    0.0000   var=    0.0000  max=0   min=0
          4-vertex_condition   mean=    0.0000   var=    0.0000  max=0   min=0
          distance_regular     mean=    0.0000   var=    0.0000  max=0   min=0
+Concept:  maxnode_lines
+         Basic                mean=    3.1833   var=   17.5543  max=21  min=1
+         Regular              mean=  237.9200   var=44988.2030  max=595 min=21
+         Extension            mean=    4.1100   var=   42.8446  max=45  min=1
+         CFI                  mean=  219.6350   var=76653.5989  max=1770        min=28
+         4-vertex_condition   mean= 1953.0000   var=    0.0000  max=1953        min=1953
+         distance_regular     mean=  955.2000   var=124671.2594 max=1953        min=43
+Concept:  minnode_lines(3)
+         Basic                mean=    4.2500   var=   30.9956  max=28  min=1
+         Regular              mean=    3.4700   var=   98.0044  max=45  min=1
+         Extension            mean=   10.7200   var=  530.2645  max=153 min=1
+         CFI                  mean=  602.2250   var=186561.1446 max=1653        min=1
+         4-vertex_condition   mean=    1.0000   var=    0.0000  max=1   min=1
+         distance_regular     mean=    1.0000   var=    0.0000  max=1   min=1
+Concept:  k_core
+         Basic                mean=    1.7500   var=    0.4209  max=3   min=1
+         Regular              mean=    1.0000   var=    0.0000  max=1   min=1
+         Extension            mean=    1.4600   var=    0.3285  max=3   min=1
+         CFI                  mean=    2.3000   var=    0.8501  max=5   min=1
+         4-vertex_condition   mean=    1.0000   var=    0.0000  max=1   min=1
+         distance_regular     mean=    1.0000   var=    0.0000  max=1   min=1
+Concept:  degree_centrality
+         Basic                mean=    3.8167   var=    0.7499  max=5   min=2
+         Regular              mean=    1.0000   var=    0.0000  max=1   min=1
+         Extension            mean=    3.2100   var=    0.8860  max=6   min=1
+         CFI                  mean=    3.7100   var=    1.5461  max=7   min=1
+         4-vertex_condition   mean=    1.0000   var=    0.0000  max=1   min=1
+         distance_regular     mean=    1.0000   var=    0.0000  max=1   min=1
+Concept:  comm_modularity
+         Basic                mean=    2.6242   var=    0.4857  max=4   min=1
+         Regular              mean=    3.1461   var=    0.8636  max=8   min=1
+         Extension            mean=    2.6091   var=    0.4588  max=5   min=2
+         CFI                  mean=    6.3903   var=    2.5831  max=12  min=2
+         4-vertex_condition   mean=    5.0156   var=    0.4532  max=7   min=3
+         distance_regular     mean=    5.3312   var=    0.9676  max=10  min=3

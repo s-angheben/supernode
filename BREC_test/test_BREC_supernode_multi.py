@@ -142,34 +142,37 @@ def get_dataset(device):
     CHUNK_SIZE = 5000
     DATASET_LEN = 51200
 
-    if not osp.exists(f'./Data/{name_transf}'):
-        print("Constructing dataset")
-        dataset = BRECDataset(
-                dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
-                name=name_vanilla,
-                pre_transform=makefeatures
-#                pre_transform=T.OneHotDegree(max_degree=16)
-                )
-
-        transformed_dataset = [AddSupernodesHeteroMulti(concepts_list_ex)(data) for data in dataset]
-        os.makedirs(f'./Data/{name_transf}')
-        for i in range(len(dataset) // CHUNK_SIZE + 1):
-            start_idx = i * CHUNK_SIZE
-            end_idx = min((i + 1) * CHUNK_SIZE, DATASET_LEN)
-            torch.save(
-                transformed_dataset[start_idx : end_idx],
-                f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth',
-            )
+#    if not osp.exists(f'./Data/{name_transf}'):
+#        print("Constructing dataset")
+#        dataset = BRECDataset(
+#                dataset_path="/home/sam/Documents/network/supernode/dataset/BREC_raw",
+#                name=name_vanilla,
+#                pre_transform=makefeatures
+##                pre_transform=T.OneHotDegree(max_degree=16)
+#                )
+#
+#        transformed_dataset = [AddSupernodesHeteroMulti(concepts_list_ex)(data) for data in dataset]
+#        os.makedirs(f'./Data/{name_transf}')
+#        for i in range(len(dataset) // CHUNK_SIZE + 1):
+#            start_idx = i * CHUNK_SIZE
+#            end_idx = min((i + 1) * CHUNK_SIZE, DATASET_LEN)
+#            torch.save(
+#                transformed_dataset[start_idx : end_idx],
+#                f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth',
+#            )
 
     loaded_dataset = []
     num_chunks = DATASET_LEN // CHUNK_SIZE + 1
     print("loading data")
     for i in tqdm(range(num_chunks)):
-        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
+#        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
+        chunk = torch.load(f'./Data/TBREC_supernode_multi_precalc_k_core/transformed_dataset_chunk_{i}.pth')
         loaded_dataset.extend(chunk)
 
     data1 = loaded_dataset[0]
-    supnodes_name = [concept['name'] for concept in concepts_list_ex]
+    supnodes_name = data1.metadata()[0]
+    supnodes_name.remove('normal')
+#    supnodes_name = [concept['name'] for concept in concepts_list_ex]
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
@@ -347,7 +350,8 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "HGIN_simple_test"
+#    NAME = "UHGIN_m_simple_edgecomp"
+    NAME = "UHGIN_m_kcore"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 
