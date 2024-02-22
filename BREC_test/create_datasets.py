@@ -66,13 +66,14 @@ def main():
 #          ( "minnode_lines", [{"name": "minline", "fun": min_lines, "args": []}]  ),
 #          ( "k_core", [{"name": "k_core", "fun": k_core, "args": []}]  ),
 #          ( "degree_centrality", [{"name": "deg_cent", "fun": degree_centrality, "args": []}]  ),
-          ( "comm_modul", [{"name": "comm_mod", "fun": comm_modularity, "args": []}]  ),
+#          ( "comm_modul", [{"name": "comm_mod", "fun": comm_modularity, "args": []}]  ),
+          ( "star2",        [{"name": "star2", "fun": star, "args": []}]                ),
         ]
 
     procs = []
     for name, concept in concepts_list:
-#        name_transf = f"TBREC_supernode_normal_precalc_{name}"
-#        proc = Process(target=create_concept_dataset_normal, args=(dataset, concept, name_transf))
+        name_transf = f"TBREC_supernode_normal_precalc_{name}"
+        proc = Process(target=create_concept_dataset_normal, args=(dataset, concept, name_transf))
 
         name_transf = f"TBREC_supernode_multi_precalc_{name}"
         proc = Process(target=create_concept_dataset_multi, args=(dataset, concept, name_transf))

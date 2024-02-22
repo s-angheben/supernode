@@ -79,3 +79,10 @@ Concept:  comm_modularity
          CFI                  mean=    6.3903   var=    2.5831  max=12  min=2
          4-vertex_condition   mean=    5.0156   var=    0.4532  max=7   min=3
          distance_regular     mean=    5.3312   var=    0.9676  max=10  min=3
+Concept:  star2
+         Basic                mean=   10.0000   var=    0.0000  max=10  min=10
+         Regular              mean=   19.7000   var=  107.4668  max=35  min=7
+         Extension            mean=   10.2900   var=    1.6062  max=19  min=10
+         CFI                  mean=   81.7400   var= 1034.6941  max=198 min=18
+         4-vertex_condition   mean=   63.0000   var=    0.0000  max=63  min=63
+         distance_regular     mean=   43.4500   var=   65.9991  max=63  min=30

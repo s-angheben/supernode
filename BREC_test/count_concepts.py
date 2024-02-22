@@ -35,13 +35,13 @@ def main():
 #          ( "line_pahts" ,  {"name": "GLP2", "fun": line_paths, "args": []}            ),
 #          ( "k_edge_comp",  {"name": "kecomp", "fun": k_edge_comp, "args": []}         ),
 #          ( "k_comp",       {"name": "kcomp", "fun": k_comp, "args": []}               ),
-#          ( "star",         {"name": "star3", "fun": star, "args": []}                ),
+          ( "star",         {"name": "star3", "fun": star, "args": []}                ),
 #          ( "constell",     {"name": "const", "fun": stars_constellation, "args": []}  ),
 #          ( "maxnode_lines", {"name": "maxline", "fun": max_lines, "args": []}  ),
 #          ( "minnode_lines", {"name": "minline", "fun": min_lines, "args": []}  ),
 #          ( "k_core",       {"name": "kcore", "fun": k_core, "args": []}  ),
 #          ( "degree_centrality",{"name": "dcentr", "fun": degree_centrality, "args": []}  ),
-          ( "comm_modularity",{"name": "com_mod", "fun": comm_modularity, "args": []}  ),
+#          ( "comm_modularity",{"name": "com_mod", "fun": comm_modularity, "args": []}  ),
         ]
 
     for name, concept in concepts_list:
