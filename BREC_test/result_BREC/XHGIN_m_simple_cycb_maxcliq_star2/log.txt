@@ -1,0 +1,2 @@
+2024-02-22 15:56:23.468 | INFO     | __main__:main:362 - Namespace(P_NORM='2', EPOCH=60, LEARNING_RATE=0.0001, BATCH_SIZE=16, WEIGHT_DECAY=0.0001, OUTPUT_DIM=16, SEED=2023, THRESHOLD=72.34, MARGIN=0.0, LOSS_THRESHOLD=0.2, device=0, hidden_units=64, num_layers=6)
+2024-02-22 15:56:23.468 | INFO     | __main__:pre_calculation:117 - pre-calculation time cost: 0.0

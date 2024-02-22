@@ -166,7 +166,7 @@ def get_dataset(device):
     print("loading data")
     for i in tqdm(range(num_chunks)):
 #        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
-        chunk = torch.load(f'./Data/TBREC_supernode_multi_precalc_star2/transformed_dataset_chunk_{i}.pth')
+        chunk = torch.load(f'./Data/TBREC_supernode_multi_precalc_cycb_maxcliq_star2/transformed_dataset_chunk_{i}.pth')
         loaded_dataset.extend(chunk)
 
     data1 = loaded_dataset[0]
@@ -351,7 +351,7 @@ def main():
 
     OUT_PATH = "result_BREC"
 #    NAME = "UHGIN_m_simple_edgecomp"
-    NAME = "UHGIN_m_star2"
+    NAME = "XHGIN_m_simple_cycb_maxcliq_star2"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 

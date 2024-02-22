@@ -67,7 +67,15 @@ def main():
 #          ( "k_core", [{"name": "k_core", "fun": k_core, "args": []}]  ),
 #          ( "degree_centrality", [{"name": "deg_cent", "fun": degree_centrality, "args": []}]  ),
 #          ( "comm_modul", [{"name": "comm_mod", "fun": comm_modularity, "args": []}]  ),
-          ( "star2",        [{"name": "star2", "fun": star, "args": []}]                ),
+#          ( "star2",        [{"name": "star2", "fun": star, "args": []}]                ),
+          ( "cycb_maxcliq_star2", [ {"name": "GCB", "fun": cycle_basis, "args": []},
+                                    {"name": "GMC", "fun": max_cliques, "args": []},
+                                    {"name": "star2", "fun": star, "args": []}
+                                  ]),
+#          ( "cycb_maxcliq_star2_minl_maxl", [ {"name": "GCB", "fun": cycle_basis, "args": []},
+#                                              {"name": "GMC", "fun": max_cliques, "args": []},
+#                                              {"name": "star2", "fun": star, "args": []}
+#                                            ]),
         ]
 
     procs = []
@@ -75,8 +83,8 @@ def main():
         name_transf = f"TBREC_supernode_normal_precalc_{name}"
         proc = Process(target=create_concept_dataset_normal, args=(dataset, concept, name_transf))
 
-        name_transf = f"TBREC_supernode_multi_precalc_{name}"
-        proc = Process(target=create_concept_dataset_multi, args=(dataset, concept, name_transf))
+#        name_transf = f"TBREC_supernode_multi_precalc_{name}"
+#        proc = Process(target=create_concept_dataset_multi, args=(dataset, concept, name_transf))
 
         procs.append(proc)
         proc.start()

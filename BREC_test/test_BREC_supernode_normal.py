@@ -169,7 +169,7 @@ def get_dataset(device):
     print("loading data")
     for i in tqdm(range(num_chunks)):
 #        chunk = torch.load(f'./Data/{name_transf}/transformed_dataset_chunk_{i}.pth')
-        chunk = torch.load(f'./Data/TBREC_supernode_normal_precalc_maxnode_lines/transformed_dataset_chunk_{i}.pth')
+        chunk = torch.load(f'./Data/TBREC_supernode_normal_precalc_cycb_maxcliq_star2_minl_maxl/transformed_dataset_chunk_{i}.pth')
         loaded_dataset.extend(chunk)
 
     time_end = time.process_time()
@@ -348,7 +348,7 @@ def main():
 
 
     OUT_PATH = "result_BREC"
-    NAME = "VGIN_SGIN_NoSINIT_maxnodelines"
+    NAME = "XGIN_SGIN_NoSINIT_cycb_maxcliq_star2_minl_max"
     path = os.path.join(OUT_PATH, NAME)
     os.makedirs(path, exist_ok=True)
 

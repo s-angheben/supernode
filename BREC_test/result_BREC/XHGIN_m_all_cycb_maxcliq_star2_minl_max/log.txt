@@ -1,0 +1,73 @@
+2024-02-22 15:03:11.905 | INFO     | __main__:main:362 - Namespace(P_NORM='2', EPOCH=60, LEARNING_RATE=0.0001, BATCH_SIZE=16, WEIGHT_DECAY=0.0001, OUTPUT_DIM=16, SEED=2023, THRESHOLD=72.34, MARGIN=0.0, LOSS_THRESHOLD=0.2, device=0, hidden_units=64, num_layers=6)
+2024-02-22 15:03:11.905 | INFO     | __main__:pre_calculation:117 - pre-calculation time cost: 0.0
+2024-02-22 15:04:21.469 | INFO     | __main__:get_dataset:179 - dataset construction time cost: 55.86
+2024-02-22 15:04:23.007 | INFO     | __main__:get_model:197 - model construction time cost: 0.57
+2024-02-22 15:04:23.008 | INFO     | __main__:evaluation:246 - Basic part starting ---
+2024-02-22 15:04:23.009 | INFO     | __main__:evaluation:253 - ID: 0
+2024-02-22 15:04:23.073 | INFO     | __main__:get_model:197 - model construction time cost: 0.06
+2024-02-22 15:04:25.553 | INFO     | __main__:evaluation:289 - Loss: 0.16490285471081734
+2024-02-22 15:04:25.727 | INFO     | __main__:evaluation:289 - Loss: 0.09024092426989228
+2024-02-22 15:04:25.912 | INFO     | __main__:evaluation:289 - Loss: 0.07426697202026844
+2024-02-22 15:04:26.104 | INFO     | __main__:evaluation:289 - Loss: 0.07062645559199154
+2024-02-22 15:04:26.279 | INFO     | __main__:evaluation:289 - Loss: 0.0401687182020396
+2024-02-22 15:04:26.464 | INFO     | __main__:evaluation:289 - Loss: 0.03890701150521636
+2024-02-22 15:04:26.623 | INFO     | __main__:evaluation:289 - Loss: 0.04848456056788564
+2024-02-22 15:04:26.790 | INFO     | __main__:evaluation:289 - Loss: 0.021733169443905354
+2024-02-22 15:04:26.960 | INFO     | __main__:evaluation:289 - Loss: 0.0075979651883244514
+2024-02-22 15:04:27.116 | INFO     | __main__:evaluation:289 - Loss: 0.03233057796023786
+2024-02-22 15:04:27.285 | INFO     | __main__:evaluation:289 - Loss: 0.0072629067581146955
+2024-02-22 15:04:27.457 | INFO     | __main__:evaluation:289 - Loss: 0.03661848418414593
+2024-02-22 15:04:27.629 | INFO     | __main__:evaluation:289 - Loss: 0.016344013391062617
+2024-02-22 15:04:27.819 | INFO     | __main__:evaluation:289 - Loss: 0.023742014542222023
+2024-02-22 15:04:28.021 | INFO     | __main__:evaluation:289 - Loss: 0.014259818941354752
+2024-02-22 15:04:28.205 | INFO     | __main__:evaluation:289 - Loss: 0.027618708088994026
+2024-02-22 15:04:28.374 | INFO     | __main__:evaluation:289 - Loss: 0.009538369020447135
+2024-02-22 15:04:28.568 | INFO     | __main__:evaluation:289 - Loss: 0.006559967761859298
+2024-02-22 15:04:28.767 | INFO     | __main__:evaluation:289 - Loss: 0.02295734081417322
+2024-02-22 15:04:28.938 | INFO     | __main__:evaluation:289 - Loss: 0.028154538944363594
+2024-02-22 15:04:29.109 | INFO     | __main__:evaluation:289 - Loss: 0.016204184852540493
+2024-02-22 15:04:29.295 | INFO     | __main__:evaluation:289 - Loss: 0.030254152603447437
+2024-02-22 15:04:29.489 | INFO     | __main__:evaluation:289 - Loss: 0.00042328762356191874
+2024-02-22 15:04:29.663 | INFO     | __main__:evaluation:289 - Loss: 0.012466280022636056
+2024-02-22 15:04:29.834 | INFO     | __main__:evaluation:289 - Loss: 0.0
+2024-02-22 15:04:30.037 | INFO     | __main__:evaluation:289 - Loss: 0.029723902232944965
+2024-02-22 15:04:30.226 | INFO     | __main__:evaluation:289 - Loss: 0.0005512497737072408
+2024-02-22 15:04:30.409 | INFO     | __main__:evaluation:289 - Loss: 0.00555288792202191
+2024-02-22 15:04:30.609 | INFO     | __main__:evaluation:289 - Loss: 0.0049593508629186545
+2024-02-22 15:04:30.827 | INFO     | __main__:evaluation:289 - Loss: 0.0
+2024-02-22 15:04:31.028 | INFO     | __main__:evaluation:289 - Loss: 0.006768399383872747
+2024-02-22 15:04:31.229 | INFO     | __main__:evaluation:289 - Loss: 0.0
+2024-02-22 15:04:31.430 | INFO     | __main__:evaluation:289 - Loss: 0.0030475101084448397
+2024-02-22 15:04:31.634 | INFO     | __main__:evaluation:289 - Loss: 0.004583433736115694
+2024-02-22 15:04:31.829 | INFO     | __main__:evaluation:289 - Loss: 0.0029483588878065348
+2024-02-22 15:04:32.017 | INFO     | __main__:evaluation:289 - Loss: 0.0009009174536913633
+2024-02-22 15:04:32.214 | INFO     | __main__:evaluation:289 - Loss: 0.022399750421755016
+2024-02-22 15:04:32.402 | INFO     | __main__:evaluation:289 - Loss: 0.007929783314466476
+2024-02-22 15:04:32.612 | INFO     | __main__:evaluation:289 - Loss: 0.010153915965929627
+2024-02-22 15:04:32.804 | INFO     | __main__:evaluation:289 - Loss: 0.001885226258309558
+2024-02-22 15:04:32.999 | INFO     | __main__:evaluation:289 - Loss: 0.0062186880968511105
+2024-02-22 15:04:33.186 | INFO     | __main__:evaluation:289 - Loss: 0.0021724996622651815
+2024-02-22 15:04:33.373 | INFO     | __main__:evaluation:289 - Loss: 0.005681684066075832
+2024-02-22 15:04:33.571 | INFO     | __main__:evaluation:289 - Loss: 0.0030338788055814803
+2024-02-22 15:04:33.759 | INFO     | __main__:evaluation:289 - Loss: 0.0
+2024-02-22 15:04:33.955 | INFO     | __main__:evaluation:289 - Loss: 0.012506962870247662
+2024-02-22 15:04:34.150 | INFO     | __main__:evaluation:289 - Loss: 0.00953414011746645
+2024-02-22 15:04:34.341 | INFO     | __main__:evaluation:289 - Loss: 0.01456858403980732
+2024-02-22 15:04:34.535 | INFO     | __main__:evaluation:289 - Loss: 0.004568091593682766
+2024-02-22 15:04:34.724 | INFO     | __main__:evaluation:289 - Loss: 0.0
+2024-02-22 15:04:34.920 | INFO     | __main__:evaluation:289 - Loss: 0.0003616912290453911
+2024-02-22 15:04:35.112 | INFO     | __main__:evaluation:289 - Loss: 0.004146138206124306
+2024-02-22 15:04:35.309 | INFO     | __main__:evaluation:289 - Loss: 0.0
+2024-02-22 15:04:35.503 | INFO     | __main__:evaluation:289 - Loss: 0.0012906474294140935
+2024-02-22 15:04:35.689 | INFO     | __main__:evaluation:289 - Loss: 0.004042255226522684
+2024-02-22 15:04:35.891 | INFO     | __main__:evaluation:289 - Loss: 0.000579967352678068
+2024-02-22 15:04:36.091 | INFO     | __main__:evaluation:289 - Loss: 0.008136194664984941
+2024-02-22 15:04:36.270 | INFO     | __main__:evaluation:289 - Loss: 0.0017101236153393984
+2024-02-22 15:04:36.469 | INFO     | __main__:evaluation:289 - Loss: 0.001098836655728519
+2024-02-22 15:04:36.669 | INFO     | __main__:evaluation:289 - Loss: 0.0
+2024-02-22 15:04:37.115 | INFO     | __main__:T2_calculation:226 - X_mean = tensor([ 0.0503, -0.2742, -0.4337,  0.7374, -0.4491,  0.0669,  0.0764,  0.1078,
+        -0.0303,  0.4311,  0.7320,  0.1583, -0.1789,  0.2300,  0.1372, -0.4235],
+       device='cuda:0')
+2024-02-22 15:04:37.245 | INFO     | __main__:T2_calculation:227 - Y_mean = tensor([ 0.0630,  0.3109,  0.3110, -0.3631,  0.3515, -0.1536, -0.4344, -0.6932,
+        -0.4266, -0.0314, -0.0837,  0.4592,  0.3889, -0.2139, -0.4219,  0.2001],
+       device='cuda:0')
