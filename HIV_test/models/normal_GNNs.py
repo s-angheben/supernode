@@ -11,7 +11,7 @@ def get_GIN_model(in_channels: int, out_channels: int,
                               norm="batch_norm", dropout=dropout)
     readout = global_add_pool
 
-    model = Normal_GNN(gnn, classifier, readout, out_channels)
+    model = Normal_GNN(gnn, readout, classifier, out_channels)
     log = __log_model(model, "GIN_normal", "Normal GIN")
     return model, log
 

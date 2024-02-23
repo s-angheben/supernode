@@ -1,22 +1,28 @@
 from torch_geometric.datasets import MoleculeNet
 from torch_geometric.loader import DataLoader
+from torch_geometric.data import InMemoryDataset
 import torch
 import lightning as L
 import hashlib
 import os.path as osp
 import os
+
+from torch_geometric.transforms.compose import HeteroData
+
 from .transformation import AddSupernodes, AddSupernodesHeteroMulti
 from tqdm import tqdm
 import numpy as np
+import shutil
 
 def squeeze_y(data):
     data.y = data.y.squeeze(1).long()
     return data
 
 CHUNK_SIZE = 5000
+HIV_DATASET_LEN = 41127
 
 class MoleculeHIVNetDataModule(L.LightningDataModule):
-    def __init__(self, data_dir,
+    def __init__(self, data_dir, transform=None, pre_transform=None,
                  batch_size=64, num_workers=4,
                  train_prop=0.6, test_prop=0.2, val_prop=0.2):
         super().__init__()
@@ -26,81 +32,92 @@ class MoleculeHIVNetDataModule(L.LightningDataModule):
         self.train_prop = train_prop
         self.test_prop = test_prop
         self.val_prop = val_prop
+        self.transform = transform
+        self.pre_transform = pre_transform
 
 
     def setup(self, stage=None):
         self.dataset = MoleculeNet(self.data_dir, name="HIV",
-                                 pre_transform=squeeze_y)
-        self.dataset = self.dataset.shuffle()
+                                 pre_transform=self.pre_transform,
+                                 transform=self.transform)
+#        self.dataset = self.dataset.shuffle()
 
     def train_dataloader(self):
         return DataLoader(self.dataset[:self.train_prop], self.batch_size,
-                          shuffle=True, num_workers=self.num_workers)
+                          shuffle=False, num_workers=self.num_workers, drop_last=True)
 
     def val_dataloader(self):
-        return DataLoader(self.dataset[self.train_prop:self.train_prop+self.val_prop],
-                          self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.dataset[self.train_prop:self.train_prop+self.val_prop], self.batch_size,
+                          shuffle=False, num_workers=self.num_workers, drop_last=True)
 
     def test_dataloader(self):
-        return DataLoader(self.dataset[self.train_prop+self.val_prop:],
-                          self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.dataset[self.train_prop+self.val_prop:], self.batch_size,
+                          shuffle=False, num_workers=self.num_workers, drop_last=True)
 
 
-class MoleculeHIVNetDataModule_supernode_homogenous(L.LightningDataModule):
-    def __init__(self, concepts_list,
+class MoleculeHIV_herero_multi(InMemoryDataset):
+    def __init__(self, root, concepts, transform=None, pre_transform=None):
+        self.concepts = concepts
+        super().__init__(root, transform, pre_transform)
+        self.load(self.processed_paths[0], data_cls=HeteroData)
+
+    def raw_file_names(self):
+        return ['data.pth']
+
+    def processed_file_names(self):
+        return ['transformed_dataset.pth']
+
+
+    def download(self):
+        dataset = MoleculeNet("./dataset/STEP/", name="HIV",
+                              pre_transform=squeeze_y,)
+        transformed_dataset = [AddSupernodesHeteroMulti(self.concepts)(data) for data in dataset]
+        torch.save(transformed_dataset, f'{self.raw_dir}/data.pth')
+
+    def process(self):
+        print(self.processed_paths[0])
+        data_list = torch.load(f'{self.raw_dir}/data.pth')
+
+        if self.pre_filter is not None:
+            data_list = [data for data in data_list if self.pre_filter(data)]
+
+        if self.pre_transform is not None:
+            data_list = [self.pre_transform(data) for data in data_list]
+
+        self.save(data_list, f'{self.processed_dir}/transformed_dataset.pth')
+
+
+
+class MoleculeHIV_hetero_multi_NetDataModule(L.LightningDataModule):
+    def __init__(self, data_dir, concept_list, transform=None, pre_transform=None,
                  batch_size=64, num_workers=4,
-                 train_prop=0.6, test_prop=0.2, val_prop=0.2,
-                 ):
+                 train_prop=0.6, test_prop=0.2, val_prop=0.2):
         super().__init__()
-        self.normal_data_dir = "./dataset/Molecule_normal"
+        self.data_dir = data_dir
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.train_prop = train_prop
         self.test_prop = test_prop
         self.val_prop = val_prop
-        self.concepts_list = concepts_list
-        path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list))
-        hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
-        self.dataset_name = f"HIV_supernode_homogenous_{hash_name}"
+        self.transform = transform
+        self.pre_transform = pre_transform
+        self.concept_list = concept_list
 
 
     def setup(self, stage=None):
-        dataset = MoleculeNet(self.normal_data_dir, name="HIV",
-                              pre_transform=squeeze_y)
-        dataset_len = len(dataset)
-
-        if not osp.exists(f'./dataset/{self.dataset_name}'):
-            print(f"Creating dataset with following concepts: {self.concepts_list}")
-            os.makedirs(f'./dataset/{self.dataset_name}')
-            for i in range(dataset_len // CHUNK_SIZE + 1):
-                start_idx = i * CHUNK_SIZE
-                end_idx = min((i + 1) * CHUNK_SIZE, dataset_len)
-                chunk = dataset[start_idx : end_idx]
-                transformed_dataset = [AddSupernodes(self.concepts_list)(data) for data in chunk]
-                torch.save(
-                    transformed_dataset[start_idx : end_idx],
-                    f'./dataset/{self.dataset_name}/transformed_dataset_chunk_{i}.pth',
-                )
-
-        loaded_dataset = []
-        num_chunks = dataset_len // CHUNK_SIZE + 1
-        print("loading data")
-        for i in tqdm(range(num_chunks)):
-            chunk = torch.load(f'./dataset/{self.dataset_name}/transformed_dataset_chunk_{i}.pth')
-            loaded_dataset.extend(chunk)
-
-        self.train_dataset = loaded_dataset[:int(self.train_prop * dataset_len)]
-        self.val_dataset = loaded_dataset[int(self.train_prop * dataset_len):int((self.train_prop + self.val_prop) * dataset_len)]
-        self.test_dataset = loaded_dataset[int((self.train_prop + self.val_prop) * dataset_len):]
+        self.dataset = MoleculeHIV_herero_multi(self.data_dir, self.concept_list,
+                                                pre_transform=self.pre_transform,
+                                                transform=self.transform)
+#        self.dataset = self.dataset.shuffle()
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, self.batch_size,
-                          shuffle=True, num_workers=self.num_workers)
+        return DataLoader(self.dataset[:self.train_prop], self.batch_size,
+                          shuffle=False, num_workers=self.num_workers, drop_last=True)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset,
-                          self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.dataset[self.train_prop:self.train_prop+self.val_prop], self.batch_size,
+                          shuffle=False, num_workers=self.num_workers, drop_last=True)
 
     def test_dataloader(self):
-        return DataLoader(self.test_dataset,
-                          self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.dataset[self.train_prop+self.val_prop:], self.batch_size,
+                          shuffle=False, num_workers=self.num_workers, drop_last=True)

@@ -1,0 +1,9 @@
+dataset: HIV
+device: !!python/object/apply:torch.device
+- cuda
+dropout: 0.5
+epochs: 300
+hidden_channels: 32
+model: S_GNN
+num_layers: 3
+type: supernode_homogeneous_GNNs

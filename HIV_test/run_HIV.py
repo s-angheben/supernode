@@ -4,7 +4,7 @@ import lightning as L
 from pytorch_lightning.loggers import TensorBoardLogger
 from HIV_test.run_HIV_supernode_homogeneous import NUM_NODE_FEATURES
 
-from data.dataset import MoleculeHIVNetDataModule
+from data.dataset import MoleculeHIVNetDataModule, squeeze_y
 
 from models.normal_GNNs import *
 
@@ -19,7 +19,9 @@ print(f"Using device: {device}")
 
 
 dm = MoleculeHIVNetDataModule("./dataset/Molecule_normal", batch_size=BATCH_SIZE,
-                              train_prop=0.6, test_prop=0.2, val_prop=0.2)
+                              train_prop=0.6, test_prop=0.2, val_prop=0.2,
+                              pre_transform=squeeze_y,
+                              )
 dm.setup()
 model, model_log = get_GIN_model(in_channels=NUM_NODE_FEATURES,
                                  out_channels=NUM_CLASSES)

@@ -4,13 +4,13 @@ import lightning as L
 import torchmetrics
 
 class S_GNN(L.LightningModule):
-    def __init__(self, convs, Sconv, classifer, readout, out_channels, num_layers):
+    def __init__(self, convs, Sconv, readout, classifier, out_channels, num_layers):
         super(S_GNN, self).__init__()
         self.num_layers = num_layers
 
         self.convs = convs
         self.Sconv = Sconv
-        self.classifier = classifer
+        self.classifier = classifier
         self.readout = readout
 
         self.loss_fn = F.cross_entropy

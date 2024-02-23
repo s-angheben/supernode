@@ -4,11 +4,11 @@ import lightning as L
 import torchmetrics
 
 class Normal_GNN(L.LightningModule):
-    def __init__(self, gnn, classifer, readout, out_channels):
+    def __init__(self, gnn, readout, classifier, out_channels):
         super(Normal_GNN, self).__init__()
 
         self.gnn = gnn
-        self.classifier = classifer
+        self.classifier = classifier
         self.readout = readout
 
         self.loss_fn = F.cross_entropy

@@ -2,10 +2,14 @@ from lightning.pytorch.loggers import logger
 import torch
 import lightning as L
 from pytorch_lightning.loggers import TensorBoardLogger
+import torch_geometric.transforms as T
 
-from data.dataset import MoleculeHIVNetDataModule_supernode_homogenous
+from data.dataset import MoleculeHIVNetDataModule_supernode_homogenous, MoleculeHIVNetDataModule, squeeze_y
+from data.transformation import AddSupernodes
 from data.concepts import *
 from models.supernode_homogeneous_GNNs import get_SGIN_model
+
+import hashlib
 
 ## hyperparameters
 MAX_EPOCH = 300
@@ -17,19 +21,27 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 concepts_list = [
-       {"name": "GCB", "fun": cycle_basis, "args": []}, # max_num
+#       {"name": "GCB", "fun": cycle_basis, "args": []}, # max_num
        {"name": "GMC", "fun": max_cliques, "args": []},
     ]
+path_name = ''.join(map(lambda x: x['name'] + str(x['args']), concepts_list))
+hash_name = hashlib.sha256(path_name.encode('utf-8')).hexdigest()
+dataset_name = f"HIV_supernode_homogenous_{hash_name}"
 
-dm = MoleculeHIVNetDataModule_supernode_homogenous(concepts_list, batch_size=BATCH_SIZE,
-                                                   train_prop=0.6, test_prop=0.2, val_prop=0.2)
+transformation = T.Compose([squeeze_y, AddSupernodes(concepts_list)])
+
+dm = MoleculeHIVNetDataModule(f'./dataset/{dataset_name}', batch_size=BATCH_SIZE,
+                              train_prop=0.6, test_prop=0.2, val_prop=0.2,
+                              pre_transform=transformation,
+                              num_workers=4
+                              )
 dm.setup()
 model, model_log = get_SGIN_model(in_channels=NUM_NODE_FEATURES,
                                   out_channels=NUM_CLASSES)
 model = model.to(device)
 print(model)
 
-logger = TensorBoardLogger("tb_logs/" + "MUTAG", model_log["model"])
+logger = TensorBoardLogger("tb_logs/" + "HIV_hom", model_log["model"])
 logger.log_hyperparams(dict({"device": device,
                         "dataset": "HIV", "epochs": MAX_EPOCH}, **model_log))
 

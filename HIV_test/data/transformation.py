@@ -115,6 +115,7 @@ class AddSupernodesHeteroMulti(BaseTransform):
     def forward(self, data: Data) -> HeteroData:
         data_with_supernodes = HeteroData({
             'normal'    : {'x' : data.x.float()},
+            'label'     : {'y' : data.y},
             ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index, 'edge_attr' : data.edge_attr},
 #            ('normal', 'orig', 'normal'  )   : { 'edge_index': data.edge_index},
         })

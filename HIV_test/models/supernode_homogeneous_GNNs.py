@@ -17,7 +17,7 @@ def get_SGIN_model(in_channels: int, out_channels: int,
     readout = global_add_pool
     classifier = MLP([hidden_channels, hidden_channels, out_channels],
                                    norm="batch_norm", dropout=dropout)
-    model = S_GNN(convs, Sconv, classifier, readout, out_channels, num_layers)
+    model = S_GNN(convs, Sconv, readout, classifier, out_channels, num_layers)
     model_log = {"model": "S_GNN", "type": "supernode_homogeneous_GNNs",
                  "hidden_channels": hidden_channels,
                  "num_layers": num_layers, "dropout": dropout}
