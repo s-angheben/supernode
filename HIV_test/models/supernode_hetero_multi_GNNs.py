@@ -18,12 +18,16 @@ def get_SHGIN_multi(in_channels: int, out_channels: int,
     HConvs = torch.nn.ModuleList()
     for _ in range(num_layers):
         Conv_dict = {("normal", "orig", "normal") :  GINConv(MLP([-1, hidden_channels, hidden_channels]))}
-
         for supnode_type in supnodes_name:
-            Conv_dict |= {("normal", "toSup", supnode_type) : SimpleConv('add'),
+            Conv_dict |= {("normal", "toSup", supnode_type) : GINConv(MLP([-1, hidden_channels, hidden_channels])), #SimpleConv('add'),
                           (supnode_type, "toNor", "normal") : GINConv(MLP([-1, hidden_channels, hidden_channels]))}
         conv = HeteroConv(Conv_dict, aggr='sum')
+        HConvs.append(conv)
 
+        Conv_dict = {("normal", "identity", "normal") : SimpleConv('add')}
+        for supnode_type in supnodes_name:
+            Conv_dict |= {("normal", "toSup", supnode_type) : SimpleConv('add')}
+        conv = HeteroConv(Conv_dict, aggr='sum')
         HConvs.append(conv)
 
     readout = global_add_pool

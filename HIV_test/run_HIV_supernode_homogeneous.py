@@ -4,7 +4,7 @@ import lightning as L
 from pytorch_lightning.loggers import TensorBoardLogger
 import torch_geometric.transforms as T
 
-from data.dataset import MoleculeHIVNetDataModule_supernode_homogenous, MoleculeHIVNetDataModule, squeeze_y
+from data.dataset import MoleculeHIVNetDataModule, squeeze_y
 from data.transformation import AddSupernodes
 from data.concepts import *
 from models.supernode_homogeneous_GNNs import get_SGIN_model

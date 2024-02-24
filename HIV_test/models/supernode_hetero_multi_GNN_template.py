@@ -55,7 +55,7 @@ class S_GNN_multi(L.LightningModule):
     def _step(self, data, batch_idx):
         y_hat = self.forward(data)
         loss = self.loss_fn(y_hat, data['label'].y)
-        return loss, y_hat, data.y
+        return loss, y_hat, data['label'].y
 
     def predict_step(self, data, batch_idx, dataloader_idx):
         y_hat = self.forward(data)

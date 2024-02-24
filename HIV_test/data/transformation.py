@@ -104,6 +104,8 @@ class AddSupernodesHetero(BaseTransform):
 
         else:
             data_with_supernodes['supernodes'].x = torch.zeros(1, data.num_features)
+            t2 = torch.arange(1)
+            data_with_supernodes['supernodes', 'identity', 'supernodes'].edge_index = torch.stack([t2, t2], dim=0).long()
 
         return data_with_supernodes
 
@@ -150,6 +152,8 @@ class AddSupernodesHeteroMulti(BaseTransform):
                 data_with_supernodes[concept_name, 'identity', concept_name].edge_index = torch.stack([t2, t2], dim=0).long()
             else:
                 data_with_supernodes[concept_name].x = torch.zeros(1, data.num_features)
+                t2 = torch.arange(1)
+                data_with_supernodes[concept_name, 'identity', concept_name].edge_index = torch.stack([t2, t2], dim=0).long()
 
         return data_with_supernodes
 
