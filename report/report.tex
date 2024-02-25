@@ -740,11 +740,19 @@ After testing several models we have selected the best: GIN\_SGIN\_noSINT for ho
 
 \noindent
 \textbf{Considerations}\\
+We can see that models on the original graph that doesn't exploit high order information are not able to distinguish the pair of graphs, this would make us believe that the supernode preprocessing is at least 2-WL expressive. We run the 2-WL algorithms provided by the author of the paper and got 0 correct results, this means that all the dataset is at least 2-WL difficult, but this fact is not reported in the paper.\\
+Another consideration on the results is that the homogeneous supernode transformation when applied with multiple concept doesn't increase the performance in respect to taking the best single concept, meanwhile with the heterogeneous multi transformation the models perform better.\\
+Our best model uses the heterogeneous multi transformation with five concepts and reach a total accuracy of 57.5\%, which is an interesting achievement looking also at the models tested on the BREC paper.
 
 % subsection Settings and results (end)
 
 
 % section BREC experiments (end)
+
+\section{Real world dataset} % (fold)
+\label{sec:real_world_dataset}
+
+% section Real world dataset (end)
 
 
 %{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
