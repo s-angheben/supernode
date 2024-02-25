@@ -1,0 +1,13 @@
+classifier: "MLP(in_channels=32,out_channels=2,channel_list=[32, 32, 2],num_layers=2,norm=ModuleList(\n\
+  \  (0): BatchNorm(32)\n),dropout=[0.5, 0.0])"
+dataset: PROTEINS
+description: Normal GIN
+device: !!python/object/apply:torch.device
+- cuda
+epochs: 150
+gnn: GIN(in_channels=3,out_channels=32,hidden_channels=32,num_layer=3,dropout=Dropout(p=0.5,
+  inplace=False),jk=JumpingKnowledge(cat))
+loss: cross_entropy
+metric: MulticlassAccuracy
+model: GIN_normal
+readout: global_add_pool

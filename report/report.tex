@@ -1,0 +1,805 @@
+\documentclass[twoside,11pt]{article}
+
+% Any additional packages needed should be included after jmlr2e.
+% Note that jmlr2e.sty includes epsfig, amssymb, natbib and graphicx,
+% and defines many common macros, such as 'proof' and 'example'.
+%
+% It also sets the bibliographystyle to plainnat; for more information on
+% natbib citation styles, see the natbib documentation, a copy of which
+% is archived at http://www.jmlr.org/format/natbib.pdf
+
+
+\usepackage{jmlr2e}
+\usepackage[a4paper,tmargin=2cm,rmargin=1in,lmargin=1in,margin=0.85in,bmargin=2cm,footskip=.2in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Definitions of handy macros can go here
+
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+
+% Heading arguments are {volume}{year}{pages}{submitted}{published}{author-full-names}
+
+\jmlrheading{1}{2000}{1-48}{4/00}{10/00}{}
+
+% Short headings should be running head and authors last names
+
+\ShortHeadings{Advanced Topics in Machine Learning and Optimization}{}
+\firstpageno{1}
+
+\begin{document}
+
+\title{Supernode Graph Neural Networks}
+
+\author{\name Samuele Angheben, 240268
+        \AND
+       \name Steve Azzolin, Francesco Ferrini
+   }
+
+\maketitle
+
+\begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
+This paper describes the mixtures-of-trees model, a probabilistic
+model for discrete multidimensional domains.  Mixtures-of-trees
+generalize the probabilistic trees of \citet{chow:68}
+in a different and complementary direction to that of Bayesian networks.
+We present efficient algorithms for learning mixtures-of-trees
+models in maximum likelihood and Bayesian frameworks.
+We also discuss additional efficiencies that can be
+obtained when data are ``sparse,'' and we present data
+structures and algorithms that exploit such sparseness.
+Experimental results demonstrate the performance of the
+model for both density estimation and classification.
+We also discuss the sense in which tree-based classifiers
+perform an implicit form of feature selection, and demonstrate
+a resulting insensitivity to irrelevant attributes.
+\end{abstract}
+
+\begin{keywords}
+  Bayesian Networks, Mixture Models, Chow-Liu Trees
+\end{keywords}
+
+\section{Introduction}
+
+Probabilistic inference has become a core technology in AI,
+largely due to developments in graph-theoretic methods for the
+representation and manipulation of complex probability
+distributions~\citep{pearl:88}.  Whether in their guise as
+directed graphs (Bayesian networks) or as undirected graphs (Markov
+random fields), \emph{probabilistic graphical models} have a number
+of virtues as representations of uncertainty and as inference engines.
+Graphical models allow a separation between qualitative, structural
+aspects of uncertain knowledge and the quantitative, parametric aspects
+of uncertainty...\\
+
+\section{Preliminaries} % (fold)
+\label{sec:preliminaries}
+In this section, we introduce the definition of concepts and supernodes in a graph and then briefly recall the topic of graph classification with graph neural networks and some basics theoretical results.
+
+\subsection{Concepts and Supernodes} % (fold)
+\label{sub:concepts_and_supernodes}
+With Supernode Graph Neural Networks we want to enhance the expressive power of GNN by adding additional nodes to the graph (supernodes) that represent the manifestation of patterns (concepts) within the graph and so are connected to the original graph's nodes that correspond to the particular realization.\\
+
+\noindent
+{\bf Definition (Concept)}.
+{    A concept \( C \) is a pattern that can be found in a graph.\\Given a graph \( G = (V,E) \) and a concept \( C \) we can extract each realization \( R_{C_i} \) of \( C \)  in \( G \) as a list of subsets of nodes:
+\[
+    R_C = [R_{C_1}, \ldots , R_{C_n}] \qquad \text{where} \; R_{C_i} \subseteq V \)
+\]
+}
+
+%\begin{definition}[Concept]
+%    A concept \( C \) is a pattern that can be found in a graph.\\Given a graph \( G = (V,E) \) and a list of concepts \( L_C = [C^1, C^2, \ldots, C^n] \) we can extract for each concept \( C^i \) each \( j \) realization \( R_{C_j^i} \) of \( C^i \)  in \( G \) as a list of subsets of nodes:
+%\[
+%    R_C = [R_{C_1}, \ldots , R_{C_n}] \qquad \text{where} \; R_{C_i} \subseteq V \)
+%\]
+%\end{definition}
+\noindent
+{\bf Example:} {
+\texttt{max\_cliques}, \texttt{cycle\_basis}, \texttt{line\_paths}, \texttt{star}
+}\\
+%% no randomness concepts
+
+\noindent
+Once we have defined our concepts and we can extract them from the graph we can transform the original graph to add the supernodes in three different ways:
+\begin{itemize}
+    \item homogeneous transformation:\\
+        each supernodes will be of the same type of the original nodes of the graph.
+
+    \item heterogeneous transformation:\\
+        all the supernodes will be of the same type that is different from the type of the nodes of the original graph.
+
+    \item heterogeneous multi transformation:\\
+        for each concepts there are different type of supernodes and each of them are different from the type of the nodes of the original graph.
+\end{itemize}
+More formally we can define the transformation as follows:\\
+
+\noindent
+{\bf Transformation (Supernodes homogeneous)}.
+{
+    Given a graph \( G = (V,E) \) and a list of concepts \( L = [C^1, C^2, \ldots, C^n] \) we can create a list \( R_{L} \) that contains all the realization:
+\[
+    R_L = [ \; \forall C^j \in L.\;\forall R_{C_i^j}. \; R_{C_i^j} \; ]
+\]
+Then transform the original graph: \[
+    G'=(V+S, E+E_S)  \\
+.\]where \( S = \{S_{k} \} \; \) and \( E_S = \{ (S_k, n_{S_k})  \} \; \textrm{with} \; n_{S_k} \in R_L[k] \;\; \textrm{for} \; k = 1, \ldots, len(R_L) \).
+}\\
+
+\noindent
+{\bf Transformation (Supernodes heterogeneous)}.
+{
+    Given a graph \( G = (V,E) \) and a list of concepts \( L = [C^1, C^2, \ldots, C^n] \) we can create a list \( R_{L} \) that contains all the realization:
+\[
+    R_L = [ \; \forall C^j \in L.\;\forall R_{C_i^j}. \; R_{C_i^j} \; ]
+\]
+Then create an heterogeneous graph from the original homogeneous graph:\[
+    G'=(H_V, H_E)
+.\]
+\begin{tabular}{cll}
+    \( H_V = \) &  \( \{\textrm{normal}:V,\; \textrm{supernodes}:S\} \) \\
+    \( H_E = \) &  \( \{\textrm{(normal, orig, normal)} : E \) \\
+              & \( \,\,\, \textrm{(supernodes, toNor, normal)} : E_S \) \\
+              & \( \,\,\, \textrm{(normal, toSup, supernodes)} : flip(E_S) \) \\
+              & \( \,\,\, \textrm{(normal, identity, normal)} : I_V \) \\
+              & \( \,\,\, \textrm{(supernodes, identity, supernodes)} : I_S \}\) \\
+\end{tabular}\\
+
+\noindent
+where \( S = \{S_{k} \} \; \) and \( E_S = \{ (S_k, n_{S_k})  \} \; \textrm{with} \; n_{S_k} \in R_L[k] \;\; \textrm{for} \; k = 1, \ldots, len(R_L) \) \\
+and \( I_V = \{(n_i, n_i), \forall n_i \in V\} \) and \( I_S = \{(n_s, n_s), \forall n_s \in S \} \).
+}\\
+
+\noindent
+{\bf Transformation (Supernodes heterogeneous multi)}.
+{
+    Given a graph \( G = (V,E) \) and a list of concepts \( L = [C^1, C^2, \ldots, C^n] \) we can create a dict of list \( R_{L} \) that for each concepts contains all the realization of it:
+\[
+    D_L = \{ name(C^j) : R_{C^j}. \; \forall C^j \in L\}
+\]
+Then create an heterogeneous graph from the original homogeneous graph:\[
+    G'=(H_V, H_E)
+.\]
+\begin{tabular}{cll}
+    \( H_V = \) &  \( \{\textrm{normal}:V,\; \textrm{C^j\_name}:S_{C^j}. \; \forall C^j \in D_L\} \) \\
+    \( H_E = \) &  \( \{\textrm{(normal, orig, normal)} : E \) \\
+                & \( \,\,\, (C^j\_name\textrm{, toNor, normal)} : E_{S_{C^j}} \) \\
+                & \( \,\,\, \textrm{(normal, toSup, C^j\_name)} : flip(E_{S_{C^j}}) \) \\
+              & \( \,\,\, \textrm{(normal, identity, normal)} : I_V \) \\
+              & \( \,\,\, C^j\_name\textrm{, identity, C^j\_name)} : I_{S_{C^j}}. \;\; \forall C^j \in D_L \}\) \\
+\end{tabular}\\
+
+\noindent
+where \( S_{C^j} = \{S_{Ck} \} \; \) and \( E_{S_{C^j}} = \{ (S_{Ck}, n_{S_{Ck}})  \} \; \textrm{with} \; n_{S_{Ck}} \in D_L(C^j)[k] \;\; \textrm{for} \; k = 1, \ldots, len(D_L(C^j)) \)
+and \( I_V = \{(n_i, n_i), \forall n_i \in V\} \) and \( I_{S_{C^j}} = \{(n_s, n_s), \forall n_s \in S_{C^j} \} , \forall C^j \in D_L\).
+}
+
+% subsection Concepts and Supernodes (end)
+
+\subsection{Graph classification with GNN} % (fold)
+\label{sub:graph_classification_with_gnn}
+The usual structure of GNN models for graph classification is the following:
+\begin{enumerate}
+    \item Node embeddings: a sequence of graph convolutional layers that compute node embeddings.
+    \item Readout: a function that aggregates node embeddings into a graph embedding.
+    \item Classifier: a function that takes the graph embedding and computes the output.
+\end{enumerate}
+    \noindent
+    We follow this structure for all the models that we implemented, but we added a new step at the beginning to enable a flexible initialization for supernodes:
+    \begin{enumerate}
+        \setcounter{enumi}{-1}
+        \item Supernode init a graph convolutional layers that compute supernode's initial features.
+    \end{enumerate}
+\noindent
+Depending on the type of transformation that we want to apply to the graph the models will threaten the data in different ways and so the layers would be different.\\
+From the implementation point of view, to perform convolutional operation only on supernodes in homogeneous graphs we used masks on nodes and edges created during the transformation meanwhile in heterogeneous graphs we used the \texttt{HeteroConv} from torch\_geometric that allow to specify the edge type to operate on, we added the \texttt{identity} type edge to keep the nodes at the same value during the update of other type of nodes.\\
+
+
+\noindent
+We know recall some common graph convolutional and pooling layers that we will use for our models:
+
+\noindent
+{\bf Definition (MessagePassing)}.
+{
+        Message passing layers follow the form
+        \[
+            \mathbf{x}_i^{\prime} = \gamma_{\mathbf{\Theta}} \left( \mathbf{x}_i, \bigoplus_{j \in \mathcal{N}(i)} \, \phi_{\mathbf{\Theta}} \left(\mathbf{x}_i, \mathbf{x}_j,\mathbf{e}_{j,i}\right) \right),
+        \]
+        where \( \bigoplus \) denotes a differentiable, permutation invariant function, e.g., sum, mean, min, max or mul, and \( \gamma_{\mathbf{\Theta}} \) and \( \phi_{\mathbf{\Theta}} \) denote differentiable functions such as MLPs
+}\\
+
+\noindent
+{\bf MessagePassing (SimpleConv)}
+{
+        A simple message passing operator that performs (non-trainable) propagation.
+        \[
+            \mathbf{x}^{\prime}_i = \bigoplus_{j \in \mathcal{N}(i) } e_{ji} \cdot \mathbf{x}_j
+        .\]
+        where \( \bigoplus \) defines a custom aggregation scheme (eg: \texttt{add}, \texttt{sum}, \texttt{mean}, \texttt{min}, \texttt{max}, \texttt{mul})
+}\\
+
+\noindent
+{\bf MessagePassing (GINConv)}
+{
+        The graph isomorphism operator from the “How Powerful are Graph Neural Networks?” paper.
+        \[
+            \mathbf{x}^{\prime}_i = h_{\mathbf{\Theta}} \left( (1 + \epsilon) \cdot \mathbf{x}_i + \sum_{j \in \mathcal{N}(i)} \mathbf{x}_j \right)
+        .\]
+        here \( h_{\mathbf{\Theta}} \) denotes a neural network, .i.e. an MLP.
+}\\\\
+{\bf MessagePassing (GCNConv)}
+{
+        The graph convolutional operator from the “Semi-supervised Classification with Graph Convolutional Networks” paper. Its node-wise formulation is given by:
+        \[
+            \mathbf{x}^{\prime}_i = \mathbf{\Theta}^{\top} \sum_{j \in \mathcal{N}(i) \cup \{ i \}} \frac{e_{j,i}}{\sqrt{\hat{d}_j \hat{d}_i}} \mathbf{x}_j
+        .\]
+        With \( \hat{d}_i = 1 + \sum_{j \in \mathcal{N}(i)} e_{j,i} \), where \( e_{j,i} \) denotes the edge weight from source node \( j \) to the target node \( i \).
+}\\\\
+{\bf Aggregation (Global\_add\_pool)}
+{
+        Returns batch-wise graph-level-outputs by averaging node features across the node dimension. For a single graph, its output is computed by
+        \[
+            \mathbf{r}_i = \sum_{n=1}^{N_i} \mathbf{x}_n
+        .\]
+}\\\\
+{\bf Aggregation (Global\_mean\_pool)}
+{
+Returns batch-wise graph-level-outputs by averaging node features across the node dimension. For a single graph, its output is computed by
+        \[
+           \mathbf{r}_i = \frac{1}{N_i} \sum_{n=1}^{N_i} \mathbf{x}_n
+        .\]
+}
+
+% subsection Graph classification with GNN (end)
+
+\subsection{Representational power of GNN} % (fold)
+\label{sub:representational_power_of_gnn}
+From theoretical results we know that no first order GNN can have a higher representational power than the Weisfeiler-Lehman test of isomorphism.
+
+% subsection Representational power of GNN (end)
+
+% section Preliminaries (end)
+
+\section{Concepts and Models} % (fold)
+\label{sec:concepts_and_models}
+In this section we will describe the concepts that we have build and the models types based on the type of transformation.
+
+\subsection{Concepts} % (fold)
+\label{sub:concepts}
+We have built a list of concepts that we think are useful to represent the structure of a graph, in particular we have focused on the following concepts:\\\\
+\noindent
+\begin{tabular}{ |M{4cm}|M{12cm}| }
+    \hline
+    \multicolumn{2}{|c|}{Concepts} \\
+    \hline
+    name & description \\
+    \hline
+    maxcliques &  the cliques with at least 3 nodes\\
+    \hline
+    cyclebasis(max\_num) & the first max\_num biggest cycle basis \\
+    \hline
+    linepaths & the linepahts: the chains of nodes that have only 2 edges\\
+    \hline
+    k\_edge\_comp & k-edge-connected component \\
+    \hline
+    star2 & for each node the 2-neighbours distance \\
+    \hline
+    maxlines & find all the nodes with biggest degree and extract for each couple of them the shortest path\\
+    \hline
+    minlines & find all the nodes with least degree and extract for each couple of them the shortest path\\
+    \hline
+    k\_core & group each node with the same k-core value \\
+    \hline
+    degree\_centrality & group each node with the same degree centrality value \\
+    \hline
+    comm\_modul & communities based on modularity \\
+    \hline
+    \hline
+    maxcliques\_cyclebasis & maxcliques + cyclebasis \\
+    \hline
+    maxcliques\_cyclebasis \_star2 & maxcliques + cyclebasis + star2 \\
+    \hline
+    cycb\_maxcliq\_star2 \_minl\_maxl & maxcliques + cyclebasis + star2 + minlines + maxlines \\
+    \hline
+\end{tabular}\\\\
+
+\noindent
+For all the transformation we first convert the graph to \texttt{networkx}, then extract the specified list of concepts and then create the new graph with supernodes. Since we can specify a list we can either take a single concept or all the combinations possible of them, in particular we tested the combinations at the bottom of the table.
+
+\noindent
+{\bf Remark}
+{
+We can't create concepts that are based on randomness, because we are interested in graph classification or graph isomorphism so we would have to extract the same nodes for isomorphic graphs.
+}\\
+
+
+
+\subsubsection{Concept analysis} % (fold)
+\label{sec:concept_analysis}
+To perform a first analysis on the dataset that we want to operate on we have created a script that for each concept calculate the mean, variance, max, min of realization. This is useful to have a better understanding of the data and discard concept that are not relevant.\\
+We believe that adding to much supernodes can lead to oversmoothing, to few can be irrelevant. Moreover concepts that are local by construction can have a different behavior than the ones that connects more distant nodes.
+
+% subsubsection Concept analysis (end)
+
+% subsection Concepts (end)
+
+\subsection{Models type} % (fold)
+\label{sub:models_type}
+In our experiments we considered four different type of models:
+\begin{itemize}
+    \item normal (type 0): \\
+        models that operates on the original graph.
+    \item supernode homogeneous (type 1): \\
+        models that operates on graphs after the supernode homogeneous transformation.
+    \item supernode heterogeneous (type 2): \\
+        models that operates on graphs after the supernode heterogeneous transformation.
+    \item supernode heterogeneous multi (type 3): \\
+        models that operates on graphs after the supernode heterogeneous multi transformation.
+\end{itemize}
+
+\noindent
+Models that works on heterogeneous graphs are built with \texttt{HeteroConv}, this means that they have a different embedding space for each type of node and to update a node embeddings we perform the add aggregation of each space after the message passing. This create the difference between supernode homogeneous and supernode heterogeneous, in the first supernodes and original nodes lives in the same space, for this reason the model can't distinguish original nodes from supernodes.\\
+The main difference between supernode heterogeneous and supernode heterogeneous multi is that in the latter we can specify a convolution for each concepts, this means that if we use a learnable layer the network can threat each concept differently.
+
+% subsection Models type (end)
+
+% section Concepts and Models (end)
+
+\section{Tree-cycle experiment} % (fold)
+\label{sec:tree_cycle_experiment}
+For the first experiment we decided to synthesize our dataset, it is composed of graphs with and without cycles, in particular the class of each graph is given by this property. \\
+The reason it to check if applying the supernode preprocessing phase to the graphs with the concept \texttt{cycle\_basis}, that indeed identify cycles,  will increase the performance of the models.\\\\
+{\bf Remark}
+{
+        In this case the preprocessing computation alone will be able to correctly classify the dataset, since to add a supernode we need to find the cycles, but the goal is understand if the model will benefit from this preprocessing on the graph to then apply this techniques in more complex settings.
+}\\\\
+    \noindent
+    To synthesize this dataset we exploit the fact that a graph without cycles is a tree and therefore we first constructed random trees and then to half of them we added \texttt{cycle\_level}-times random edges. In this way we can generate this type of dataset quickly and flexibly in respect to number of graphs, graphs size, cycle level and proportions.\\\\
+{\bf Remark}
+{
+        We set each node features to \( [1] \), in this way we force the model to reason on the structure of the graph.
+}
+
+\subsection{Settings and results} % (fold)
+\label{sub:settings_and_results}
+    \noindent
+    \begin{tabular}{ |M{3cm}|M{3cm}|M{3cm}|M{3cm}|M{3cm}| }
+        \hline
+        \multicolumn{5}{|c|}{Dataset} \\
+        \hline
+        type & graph number & proportions & node number & cycle level \\
+        \hline
+        Dataset\_tree\_cycle & 10000 & 0.5 & 40 & 10\\
+        \hline
+    \end{tabular}
+
+    \vspace{0.5cm}
+
+    \noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2cm}|M{0.5cm}|M{4cm}|M{6cm}|M{2cm}|M{2cm}| }
+        \hline
+        \multicolumn{6}{|c|}{Models} \\
+        \hline
+        model name & type & supernode init & node embeddings & readout & classifier \\
+        \hline
+        GCN & 0 & - & 3 * (GCNConv(32) + relu) & global\_add\_pool & MLP(3L,32)\\
+        \hline
+        GIN & 0 & - & 3 * (GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+        \hline
+        GCNS & 1 & SimpleConv(Add) & 3 * (GCNConv(32) + relu) & global\_add\_pool & MLP(3L,32)\\
+        \hline
+        GINS & 1 & SimpleConv(Add) & 3 * (GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+        \hline
+    \end{tabular}
+}
+
+    \vspace{0.5cm}
+    \noindent
+    For training all the models we used as criterion \texttt{CrossEntropyLoss} and as optimizer \texttt{Adam}, furthermore the dataloader uses a \texttt{batch\_size} of 60 graphs. \\
+
+    \noindent
+    \begin{tabular}{ |M{3cm}|M{3cm}|M{3cm}|M{6cm}| }
+        \hline
+        \multicolumn{4}{|c|}{Results} \\
+        \hline
+        model & concepts & number of epoch & test accuracy \\
+        \hline
+        GCN & cycle\_basis & 50 & 0.5000 \\
+        \hline
+        GCNS & cycle\_basis & 10 & 1.0000\\
+        \hline
+        GIN & cycle\_basis & 10 & 1.0000 \\
+        \hline
+        GINS & cycle\_basis & 10 & 0.9995\\
+        \hline
+    \end{tabular}\\\\
+
+\noindent
+\textbf{Considerations}\\
+The results show that the normal GIN model on the original graph is enough to correctly classify the dataset, but we can notice that for the GCN models the supernode preprocessing is necessary to be able to classify the dataset.
+
+% subsubsection Considerations (end)
+
+% subsection Settings and results (end)
+
+% section Tree-cycle experiment (end)
+
+\section{BREC experiments} % (fold)
+\label{sec:brec_experiments}
+For the second experiment to understand the effectiveness of the supernode preprocessing we decided to use the BREC dataset from \textit{Towards Better Evaluation of GNN Expressiveness with BREC Dataset}.\\
+In summary it includes 400 pairs of non-isomorphic graphs with difficulty up to 4-WL-indistinguishable, divided in 4 category: Basic, Regular, Extension, CFI. Furthermore in the paper they tested different models which give us a good measure for comparison. \\
+They also provide a base template code to implement new models, since the task is to distinguish pair of graphs the loss function is the following:\[
+    L(f, G, H) = Max(0, \frac{f(G) \cdot f(H)}{\mid f(G) \mid \mid f(H) \mid} - \gamma)
+.\] where the GNN model \( f : {G} \to \mathbb{R}^d \), for our test we used \( d=16 \), \( G \) and \( H \) are two non-isomorphic graphs, and \( \gamma = 0 \). The loss function aims to promote a cosine similarity
+value lower than \( \gamma \), thereby encouraging a greater separation between the two graph embeddings.\\
+As evaluation methods we used their method called Reliable Pairwise Comparison.
+
+\subsection{Settings and results} % (fold)
+\label{sub:settings_and_results}
+
+Since each graph of the dataset doesn't have any node features with apply one of the two following transformation:
+\begin{itemize}
+    \item constant 1 (type 0)\\
+        Assign to each node the same constant value 1.
+    \item vector type (type 1)\\
+        Assign to each node a vector of the same length of the number of concepts plus one, where each element is 0 except the dimension that represent the concepts that the node represent.
+\end{itemize}
+
+\textbf{Models}
+
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2cm}|M{0.2cm}|M{0.5cm}|M{4cm}|M{6cm}|M{2cm}|M{2cm}| }
+    \hline
+    \multicolumn{7}{|c|}{Models original} \\
+    \hline
+    model name & f & type & supernode init & node embeddings & readout & classifier \\
+    \hline
+    GAT0 & 0 & 0 & - & 4 * (GATConv(32) + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+    GIN &0 & 0 & - & 4 * (GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+\end{tabular}
+}
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2cm}|M{0.2cm}|M{0.5cm}|M{4cm}|M{6cm}|M{2cm}|M{2cm}| }
+    \hline
+    \multicolumn{7}{|c|}{Models supernode homogeneous} \\
+    \hline
+    GIN\_Sadd &0 & 1 & SimpleConv('add') & 4 * (normal: GINConv(MLP,32), supernode:SimpleConv('add') + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+    GAT\_Sadd &0 & 1 & SimpleConv('add') & 4 * (normal: GATConv(32), supernode:SimpleConv('add')+ relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+    GIN\_SGIN &0 & 1 & SimpleConv('add') & 4 * (normal: GINConv(MLP,32), supernode:GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+    GIN\_SGIN \_noSINIT &0 & 1 & - & 4 * (normal: GINConv(MLP,32), supernode:GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+    GIN\_SGIN \_typef  &1 & 1 & - & 4 * (normal: GINConv(MLP,32), supernode:GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+\end{tabular}
+}
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2cm}|M{0.2cm}|M{0.5cm}|M{4cm}|M{6cm}|M{2cm}|M{2cm}| }
+    \hline
+    \multicolumn{7}{|c|}{Models supernode heterogeneous} \\
+    \hline
+    HGAT\_simple &0 & 2 & SimpleConv('add') & 4 * ((HeteroConv({
+           ('normal', 'toSup', 'supernodes'): SimpleConv('add'),
+           ('normal', 'orig', 'normal'): GATConv(32),
+           ('supernodes', 'toNor', 'normal'): GATConv(32),
+        }, aggr='sum'))+ relu) & add(global \_add\_pool of each type) & MLP(3L,32)\\
+    \hline
+    HGIN\_simple &0 & 2 & SimpleConv('add') & 4 * ((HeteroConv({
+           ('normal', 'toSup', 'supernodes'): SimpleConv('add'),
+           ('normal', 'orig', 'normal'): GINConv(MLP,32),
+           ('supernodes', 'toNor', 'normal'): GINConv(MLP,32),
+        }, aggr='sum'))+ relu) & add(global \_add\_pool of each type) & MLP(3L,32)\\
+    \hline
+\end{tabular}
+}
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2cm}|M{0.2cm}|M{0.5cm}|M{4cm}|M{6cm}|M{2cm}|M{2cm}| }
+    \hline
+    \multicolumn{7}{|c|}{Models supernode multi heterogeneous} \\
+    \hline
+    HGAT\_m\_simple &0 & 3 & SimpleConv('add') & 4 * ((HeteroConv({
+           ('normal', 'orig', 'normal'): GATConv(32),
+           ('normal', 'toSup', \( \mathcal{C} \)): SimpleConv('add'),
+           (\( \mathcal{C} \), 'toNor', 'normal'): GATConv(32),
+        }, aggr='sum'))+ relu) \( \forall \mathcal{C} \) & add(global \_add\_pool of each type) & MLP(3L,32)\\
+    \hline
+    HGIN\_m\_simple &0 & 3 & SimpleConv('add') & 4 * ((HeteroConv({
+           ('normal', 'orig', 'normal'): GINConv(MLP,32),
+           ('normal', 'toSup', \( \mathcal{C} \)): SimpleConv('add'),
+           (\( \mathcal{C} \), 'toNor', 'normal'): GINConv(MLP, 32),
+        }, aggr='sum'))+ relu) \( \forall \mathcal{C} \) & add(global \_add\_pool of each type) & MLP(3L,32)\\
+    \hline
+    HGIN\_m\_all &0 & 3 & SimpleConv('add') & 4 * ((HeteroConv({
+           ('normal', 'orig', 'normal'): GINConv(MLP,32),
+           ('normal', 'toSup', \( \mathcal{C} \)): GINConv(MLP, 32),
+           (\( \mathcal{C} \), 'toNor', 'normal'): GINConv(MLP, 32),
+        }, aggr='sum'))+ relu) \( \forall \mathcal{C} \) & add(global \_add\_pool of each type) & MLP(3L,32)\\
+    \hline
+    HGT\_multi &0 & 3 & - & 4 * (HGTConv(32, heads=4) + relu) & add(global \_add\_pool of each type) & MLP(3L,32)\\
+    \hline
+\end{tabular}
+}\\
+\vspace{4.5cm}
+
+\textbf{Results}\\
+
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2.4cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}| }
+    \hline
+    \multicolumn{11}{|c|}{Results different models} \\
+    \hline
+     & \multicolumn{2}{c|}{Basic(60)} & \multicolumn{2}{c|}{Regular(140)} & \multicolumn{2}{c|}{Extension(100)} & \multicolumn{2}{c|}{CFI(100)} & \multicolumn{2}{c|}{Total(400)} \\
+    \cline{2-3}
+    \cline{4-5}
+    \cline{6-7}
+    \cline{8-9}
+    \cline{8-9}
+    \cline{10-11}
+    Model&\multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy&  \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy\\
+    \hline
+    \hline
+    \multicolumn{11}{|l|}{Non GNN} \\
+    \hline
+    2-WL & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% \\
+    \hline
+    3-WL & 60 & 100.0\% & 50 & 35.7\% & 100 & 100.0\% & - & - & 210 & 52.5\% \\
+    \hline
+\end{tabular}
+}
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2.4cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}| }
+    \hline
+    \multicolumn{11}{|l|}{Original} \\
+    \hline
+    GAT0 & 0 & 00.0\% & 0 & 00.0\% & 0 & 00.0\% & 0 & 00.0\% & 0 & 00.0\% \\
+    \hline
+    GIN0 & 0 & 00.0\% & 0 & 00.0\% & 0 & 00.0\% & 0 & 00.0\% & 0 & 00.0\% \\
+    \hline
+\end{tabular}
+}
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2.4cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}| }
+    \hline
+    \multicolumn{11}{|l|}{Supernode homogeneous, concepts: cyclebasis\_maxcliques} \\
+    \hline
+    GIN\_Sadd & 17 & 28.3\% & 40 & 28.6\% & 10 & 10.0\% & 3 & 03.0\% & 70 & 17.5\% \\
+    \hline
+    GAT\_Sadd & 11 & 05.4\% & 32 & 22.9\% & 8 & 08.0\% & 3 & 03.0\% & 54 & 13.5\% \\
+    \hline
+    GIN\_SGIN & 31 & 51.7\% & 51 & 36.4\% & 18 & 18.0\% & 3 & 3.0\% & 103 & 25.8\% \\
+    \hline
+    GIN\_SGIN \_noSINIT & 50 & 83.3\% & 81 & 57.9\% & 43 & 43.0\% & 3 & 3.0\% & 177 & 44.2\% \\
+    \hline
+    GIN\_SGIN\_typef & 48 & 80.0\% & 92 & 65.7\% & 31 & 31.0\% & 3 & 3.0\% & 174 & 43.5\% \\
+    \hline
+\end{tabular}
+}
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2.4cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}| }
+    \hline
+    \multicolumn{11}{|l|}{Supernode heterogeneous, concepts: cyclebasis\_maxcliques} \\
+    \hline
+    HGAT\_simple & 41 & 68.3\% & 93 & 66.4\% & 35 & 35.0\% & 3 & 3.0\% & 172 & 43.0\% \\
+    \hline
+    HGIN\_simple & 29 & 48.3\% & 50 & 35.7\% & 17 & 17.0\% & 3 & 3.0\% & 99 & 24.8\% \\
+    \hline
+\end{tabular}
+}
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2.4cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}| }
+    \hline
+    \multicolumn{11}{|l|}{Supernode heterogeneous multi, concepts: cyclebasis\_maxcliques} \\
+    \hline
+    HGAT\_m\_simple & 51 & 85.0\% & 99 & 70.7\% & 41 & 41.0\% & 3 & 3.0\% & 194 & 48.5\% \\
+    \hline
+    HGIN\_m\_simple & 51 & 85.0\% & 115 & 82.1\% & 31 & 31.0\% & 3 & 3.0\% & 200 & 50.0\% \\
+    \hline
+    HGIN\_m\_all & 50 & 83.3\% & 106 & 75.7\% & 33 & 33.0\% & 3 & 3.0\% & 192 & 48.0\% \\
+    \hline
+    HGT\_multi & 52 & 86.7\% & 111 & 79.3\% & 31 & 31.0\% & 3 & 3.0\% & 197 & 49.2\% \\
+    \hline
+\end{tabular}
+} \\\\
+
+\noindent
+After testing several models we have selected the best: GIN\_SGIN\_noSINT for homogeneous supernodes and HGIN\_m\_simple for heterogeneous multi supernodes. On this two models we run the test on all our concepts and some combinations of them.
+
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2.4cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}| }
+    \hline
+    \multicolumn{11}{|c|}{Results different concepts with homogeneous transformation} \\
+    \hline
+     & \multicolumn{2}{c|}{Basic(60)} & \multicolumn{2}{c|}{Regular(140)} & \multicolumn{2}{c|}{Extension(100)} & \multicolumn{2}{c|}{CFI(100)} & \multicolumn{2}{c|}{Total(400)} \\
+    \cline{2-3}
+    \cline{4-5}
+    \cline{6-7}
+    \cline{8-9}
+    \cline{8-9}
+    \cline{10-11}
+    Model&\multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy&  \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy\\
+    \hline
+    \hline
+    \multicolumn{11}{|l|}{Supernode homogeneous, model:GIN\_SGIN\_noSINIT} \\
+    \hline
+    constellation & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% \\
+    \hline
+    cyclebasis & 47 & 78.3\% & 46 & 32.9\% & 30 & 30.0\% & 3 & 3.0\% & 126 & 31.5\% \\
+    \hline
+    k\_edge\_comp & 0 & 0.0\% & 1 & 0.7\% & 2 & 2.0\% & 3 & 3.0\% & 6 & 1.5\% \\
+    \hline
+    linepaths & 0 & 0.0\% & 0 & 0.0\% & 1 & 1.0\% & 3 & 3.0\% & 4 & 1.0\% \\
+    \hline
+    maxclique & 55 & 91.7\% & 119 & 85.0\% & 22 & 22.0\% & 0 & 0.0\% & 196 & 49.0\% \\
+    \hline
+    maxlines & 0 & 0.0\% & 42 & 30.0\% & 4 & 4.0\% & 4 & 4.0\% & 50 & 12.5\% \\
+    \hline
+    minlines & 10 & 16.7\% & 19 & 13.6\% & 23 & 23.0\% & 4 & 4.0\% & 56 & 14.0\% \\
+    \hline
+    comm\_modul & 22 & 36.7\% & 3 & 2.1\% & 22 & 22.0\% & 0 & 0.0\% & 47 & 11.8\% \\
+    \hline
+    maxcliques
+    \_cyclebasis & 50 & 83.3\% & 81 & 57.9\% & 43 & 43.0\% & 3 & 3.0\% & 177 & 44.2\% \\
+    \hline
+\end{tabular}
+}
+
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2.4cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}|M{1.25cm}| }
+    \hline
+    \multicolumn{11}{|c|}{Results different concepts with heterogeneous multi transformation} \\
+    \hline
+     & \multicolumn{2}{c|}{Basic(60)} & \multicolumn{2}{c|}{Regular(140)} & \multicolumn{2}{c|}{Extension(100)} & \multicolumn{2}{c|}{CFI(100)} & \multicolumn{2}{c|}{Total(400)} \\
+    \cline{2-3}
+    \cline{4-5}
+    \cline{6-7}
+    \cline{8-9}
+    \cline{8-9}
+    \cline{10-11}
+    Model&\multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy&  \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy\\
+    \hline
+    \hline
+    \multicolumn{11}{|l|}{Supernode heterogeneous multi, model:HGIN\_m\_simple} \\
+    \hline
+    constellation & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% \\
+    \hline
+    cyclebasis & 24 & 40.0\% & 16 & 11.4\% & 13 & 13.0\% & 3 & 3.0\% & 56 & 14.0\% \\
+    \hline
+    k\_edge\_comp & 0 & 0.0\% & 1 & 0.7\% & 2 & 2.0\% & 3 & 3.0\% & 6 & 1.5\% \\
+    \hline
+    linepaths & 0 & 0.0\% & 0 & 0.0\% & 1 & 1.0\% & 3 & 3.0\% & 4 & 1.0\% \\
+    \hline
+    maxclique & 55 & 91.7\% & 117 & 83.6\% & 22 & 22.0\% & 0 & 0.0\% & 194 & 48.5\% \\
+    \hline
+    maxlines & 0 & 0.0\% & 38 & 27.1\% & 7 & 7.0\% & 3 & 3.0\% & 48 & 12.0\% \\
+    \hline
+    minlines & 10 & 16.7\% & 4 & 2.9\% & 22 & 22.0\% & 3 & 3.0\% & 39 & 9.8\% \\
+    \hline
+    k\_core & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% \\
+    \hline
+    degree\_centrality & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% & 0 & 0.0\% \\
+    \hline
+    comm\_modul & 22 & 36.7\% & 3 & 2.1\% & 19 & 19.0\% & 0 & 0.0\% & 44 & 11.0\% \\
+    \hline
+    star2 & 16 & 26.7\% & 14 & 10.0\% & 41 & 41.0\% & 0 & 0.0\% & 71 & 17.8\% \\
+    \hline
+    maxcliques \_cyclebasis & 52 & 86.7\% & 116 & 82.9\% & 32 & 32.0\% & 3 & 3.0\% & 203 & 50.7\% \\
+    \hline
+    cycb\_maxcliq
+    \_star2\_minl\_maxl & 53 & 88.3\% & 118 & 84.3\% & 56 & 56.0\% & 3 & 3.0\% & 230 & 57.5\% \\
+    \hline
+\end{tabular}
+}\\\\
+
+\noindent
+\textbf{Considerations}\\
+
+% subsection Settings and results (end)
+
+
+% section BREC experiments (end)
+
+
+%{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
+
+% Acknowledgements should go at the end, before appendices and references
+
+%\acks{We would like to acknowledge support for this project
+%from the National Science Foundation (NSF grant IIS-9988642)
+%and the Multidisciplinary Research Program of the Department
+%of Defense (MURI N00014-00-1-0637). }
+%
+%% Manual newpage inserted to improve layout of sample file - not
+%% needed in general before appendices/bibliography.
+%
+%\newpage
+%
+%\appendix
+%\section*{Appendix A.}
+%\label{app:theorem}
+%
+%% Note: in this sample, the section number is hard-coded in. Following
+%% proper LaTeX conventions, it should properly be coded as a reference:
+%
+%%In this appendix we prove the following theorem from
+%%Section~\ref{sec:textree-generalization}:
+%
+%In this appendix we prove the following theorem from
+%Section~6.2:
+%
+%\noindent
+%{\bf Example:} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
+%not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
+%dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
+%which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
+%respective empirical mutual information values based on the sample
+%$\dataset$. Then
+%\[
+%	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
+%\]
+%with equality only if $u$ is identically 0.} \hfill\BlackBox
+%
+%\noindent
+%{\bf Proof}. We use the notation:
+%\[
+%P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
+%P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
+%\]
+%These values represent the (empirical) probabilities of $v$
+%taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
+%by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
+%
+%{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
+
+
+\vskip 0.2in
+\bibliography{sample}
+
+\end{document}

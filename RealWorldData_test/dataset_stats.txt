@@ -1,0 +1,62 @@
+Dataset:  HIV
+	 HIV                  N_nodes_mean=   25.5103	N_edges=   54.9366	average_node_degree=    2.1446
+Concepts:  maxcliques
+	mean=    0.0268	var=    0.0687	max=   20.0000	min=    0.0000
+Concepts:  cyclebasis
+	mean=    3.1972	var=    4.5433	max=   75.0000	min=    0.0000
+Concepts:  maxcliques_cyclebasis
+	mean=    3.2240	var=    4.7320	max=   75.0000	min=    0.0000
+Concepts:  linepaths
+	mean=    5.9453	var=   10.4097	max=   64.0000	min=    0.0000
+Concepts:  k_edge_comp
+	mean=    1.9988	var=    1.3988	max=   20.0000	min=    0.0000
+Concepts:  constell
+	mean=    1.4559	var=    2.1587	max=   21.0000	min=    0.0000
+Concepts:  star2
+	mean=   25.5103	var=  146.7197	max=  222.0000	min=    2.0000
+Concepts:  maxcliques_cyclebasis_star2
+	mean=   28.7343	var=  181.0870	max=  280.0000	min=    2.0000
+Concepts:  maxlines
+	mean=   23.9073	var= 2692.6098	max= 2485.0000	min=    1.0000
+Concepts:  minlines
+	mean=  361.8798	var=340695.4870	max=22791.0000	min=    1.0000
+Concepts:  k_core
+	mean=    1.9947	var=    0.1087	max=    3.0000	min=    1.0000
+Concepts:  degree_centrality
+	mean=    3.3905	var=    0.3304	max=    6.0000	min=    1.0000
+Concepts:  comm_modul
+	mean=    4.5167	var=    1.5918	max=   20.0000	min=    1.0000
+Concepts:  cycb_maxcliq_star2_minl_maxl
+	mean=  414.5214	var=394544.0704	max=25494.0000	min=    4.0000
+
+
+Dataset:  PROTEINS
+	 HIV                  N_nodes_mean=   39.0575	N_edges=  145.6316	average_node_degree=    3.7346
+Concepts:  maxcliques
+	mean=   18.3971	var=  507.5904	max=  424.0000	min=    0.0000
+Concepts:  cyclebasis
+	mean=   65.2192	var= 5909.9627	max=  300.0000	min=    0.0000
+Concepts:  maxcliques_cyclebasis
+	mean=   83.6164	var= 8532.3356	max=  724.0000	min=    0.0000
+Concepts:  linepaths
+	mean=    2.9281	var=   82.6603	max=  130.0000	min=    0.0000
+Concepts:  k_edge_comp
+	mean=    1.8805	var=    2.4758	max=   22.0000	min=    0.0000
+Concepts:  constell
+	mean=    0.1680	var=    1.4996	max=   24.0000	min=    0.0000
+Concepts:  star2
+	mean=   38.3666	var= 1573.4878	max=  300.0000	min=    4.0000
+Concepts:  maxcliques_cyclebasis_star2
+	mean=  121.9829	var=16778.9880	max= 1024.0000	min=    7.0000
+Concepts:  maxlines
+	mean=    4.0881	var=   94.4994	max=  171.0000	min=    1.0000
+Concepts:  minlines
+	mean=  430.9802	var=7232234.0680	max=70125.0000	min=    1.0000
+Concepts:  k_core
+	mean=    1.4340	var=    0.4149	max=    4.0000	min=    1.0000
+Concepts:  degree_centrality
+	mean=    4.0997	var=    2.0899	max=   12.0000	min=    1.0000
+Concepts:  comm_modul
+	mean=    4.4582	var=    5.1927	max=   20.0000	min=    1.0000
+Concepts:  cycb_maxcliq_star2_minl_maxl
+	mean=  557.0512	var=7548039.3148	max=70883.0000	min=   15.0000

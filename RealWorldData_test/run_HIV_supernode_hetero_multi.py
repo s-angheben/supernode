@@ -24,7 +24,7 @@ BATCH_SIZE = 100
 parser = argparse.ArgumentParser(description="BREC Test")
 parser.add_argument("--EPOCH", type=int, default=MAX_EPOCH)
 parser.add_argument("--BATCH_SIZE", type=int, default=BATCH_SIZE)
-parser.add_argument("--concepts", type=str, default="cycle_basis")
+parser.add_argument("--concepts", type=str, default="cyclebasis")
 
 args = parser.parse_args()
 EPOCH = args.EPOCH
