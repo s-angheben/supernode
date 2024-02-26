@@ -46,39 +46,20 @@
 
 \maketitle
 
-\begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
-This paper describes the mixtures-of-trees model, a probabilistic
-model for discrete multidimensional domains.  Mixtures-of-trees
-generalize the probabilistic trees of \citet{chow:68}
-in a different and complementary direction to that of Bayesian networks.
-We present efficient algorithms for learning mixtures-of-trees
-models in maximum likelihood and Bayesian frameworks.
-We also discuss additional efficiencies that can be
-obtained when data are ``sparse,'' and we present data
-structures and algorithms that exploit such sparseness.
-Experimental results demonstrate the performance of the
-model for both density estimation and classification.
-We also discuss the sense in which tree-based classifiers
-perform an implicit form of feature selection, and demonstrate
-a resulting insensitivity to irrelevant attributes.
-\end{abstract}
+%\begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
+%
+%\end{abstract}
 
 \begin{keywords}
-  Bayesian Networks, Mixture Models, Chow-Liu Trees
+  Graph neural network, Concepts, Supernodes
 \end{keywords}
 
 \section{Introduction}
+This project aim to implement and analyze the Supernode graph neural network, which consist of a new preprocessing operation and consequently custom graph neural network that tries to increase the expressive power of naive graph neural networks.\\
+The idea is based on \textit{concepts} that are pattern that can be found in the graph, once a list of concepts is selected we transform the original graph adding for each concept realization a supernode that is connected to the proper original nodes.\\
+This technique is between high order GNN and naive GNN, the intention is to give to the message passing scheme more power with more node visibility and use learnable convolutional layer to boost naive GNN performance.
 
-Probabilistic inference has become a core technology in AI,
-largely due to developments in graph-theoretic methods for the
-representation and manipulation of complex probability
-distributions~\citep{pearl:88}.  Whether in their guise as
-directed graphs (Bayesian networks) or as undirected graphs (Markov
-random fields), \emph{probabilistic graphical models} have a number
-of virtues as representations of uncertainty and as inference engines.
-Graphical models allow a separation between qualitative, structural
-aspects of uncertain knowledge and the quantitative, parametric aspects
-of uncertainty...\\
+
 
 \section{Preliminaries} % (fold)
 \label{sec:preliminaries}
@@ -109,7 +90,7 @@ With Supernode Graph Neural Networks we want to enhance the expressive power of 
 %% no randomness concepts
 
 \noindent
-Once we have defined our concepts and we can extract them from the graph we can transform the original graph to add the supernodes in three different ways:
+Once we have defined our concepts and we can extract them from the graph, we can transform the original graph to add the supernodes in three different ways:
 \begin{itemize}
     \item homogeneous transformation:\\
         each supernodes will be of the same type of the original nodes of the graph.
@@ -861,6 +842,17 @@ On the \texttt{PROTEINS} dataset instead, can be observed that in some cases the
 % section Real world dataset (end)
 
 \section{Technical implementation}
+The first idea of supernode for this project was via the homogeneous transformation, both the original node and the supernodes are of the same type and the convolutional graph operations operate on them equally at the same time.\\ The first idea was to convert the graph to \texttt{networkx}, extract the concepts, create and connect the proper node and then convert back the graph to the \texttt{torch\_geometric} representation. This was not very flexible because the supernode initialization could be done only during the preprocessing and it was impossible to have a learnable initialization.\\
+At this point we decided to initialize the supernode naively and then implement an ad hoc first layer that works only on supernode to address this issue. We achieved this by creating nodes and edges masks that specify the type of the nodes and then in the model we are able to specify which type of node to update, the first time with this solution we had problem with grad and matrices using complex graph convolution operation so we decided to try to use heterogeneous graph.\\
+The implementation of heterogeneous and heterogeneous multi was challenging due to the fact that there aren't many example online but we succeeds to do that.
+Then implementing the model using \texttt{HeteroConv} we realize it didn't correspond to the \textit{pure} algorithm that we had in mind because it uses different spaces for each type.\\
+At the end we come back to the mask technique and changed the model operation with simpler operation to not cause error but also to satisfy the original idea.\\
+Given the good results of the heterogeneous transformation we decided to keep testing it during the project.\\\\
+During the project we implemented different \texttt{Dataset} and \texttt{Dataloader} to boost the performance and ported the code to \texttt{PyTorch Lightning} to facilitate the use of \texttt{tensorboard} to keep track and analyze our experiments.
+
+\section{Conclusion}
+With this project we explored the idea of supernode graph neural network and achieve interesting results showing that this technique increase the expressive power of naive GNN.\\
+Further research can be done to ad-hoc dataset with ad-hoc concept built by expert in the particular field.
 
 
 %{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}

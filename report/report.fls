@@ -144,9 +144,9 @@ OUTPUT report.out
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmbx10.tfm
+INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmbx12.tfm
-INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmr8.tfm
 INPUT /nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/tfm/public/cm/cmr6.tfm

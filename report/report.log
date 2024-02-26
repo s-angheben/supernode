@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/nixos.org) (preloaded format=pdflatex 1980.1.1)  26 FEB 2024 12:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/nixos.org) (preloaded format=pdflatex 1980.1.1)  26 FEB 2024 13:49
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -413,31 +413,20 @@ Package hyperref Info: Link coloring OFF on input line 38.
 
 \c@lstlisting=\count305
 
-Package natbib Warning: Citation `chow:68' on page 1 undefined on input line 52.
-
-
-Package natbib Warning: Citation `pearl:88' on page 1 undefined on input line 75.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 72--82
+Underfull \hbox (badness 10000) in paragraph at lines 70--71
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 89--90
-
- []
-
-LaTeX Font Info:    Trying to load font information for U+msa on input line 93.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 74.
 (/nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 93.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 74.
  (/nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-./report.tex:95: Undefined control sequence.
-l.95 ...= [R_{C_1}, \ldots , R_{C_n}] \qquad \text
+./report.tex:76: Undefined control sequence.
+l.76 ...= [R_{C_1}, \ldots , R_{C_n}] \qquad \text
                                                   {where} \; R_{C_i} \subset...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -446,57 +435,57 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-./report.tex:95: LaTeX Error: Bad math environment delimiter.
+./report.tex:76: LaTeX Error: Bad math environment delimiter.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.95 ...uad \text{where} \; R_{C_i} \subseteq V \)
+l.76 ...uad \text{where} \; R_{C_i} \subseteq V \)
                                                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 105--110
+Underfull \hbox (badness 10000) in paragraph at lines 86--91
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 104--105
 
  []
 
 [1{/nix/store/8j4rqz5k2kvqzdzahw03dx6j942r67sh-texlive-combined-full-2023.20240114/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 {/nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Underfull \hbox (badness 10000) in paragraph at lines 123--124
+Underfull \hbox (badness 10000) in paragraph at lines 115--117
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 134--136
+Underfull \hbox (badness 10000) in paragraph at lines 127--136
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 146--155
+Underfull \hbox (badness 10000) in paragraph at lines 137--141
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 156--160
-
- []
-
-./report.tex:172: Missing $ inserted.
+./report.tex:153: Missing $ inserted.
 <inserted text> 
                 $
-l.172 ...\{\textrm{normal}:V,\; \textrm{C^j\_name}
+l.153 ...\{\textrm{normal}:V,\; \textrm{C^j\_name}
                                                   :S_{C^j}. \; \forall C^j \...
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
-./report.tex:172: Extra }, or forgotten $.
+./report.tex:153: Extra }, or forgotten $.
 \mbox  #1->\leavevmode \hbox {#1}
                                  
-l.172 ...\{\textrm{normal}:V,\; \textrm{C^j\_name}
+l.153 ...\{\textrm{normal}:V,\; \textrm{C^j\_name}
                                                   :S_{C^j}. \; \forall C^j \...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -504,10 +493,10 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-./report.tex:172: Extra }, or forgotten $.
+./report.tex:153: Extra }, or forgotten $.
 \nfss@text #1->{\mbox {#1}}
                            
-l.172 ...\{\textrm{normal}:V,\; \textrm{C^j\_name}
+l.153 ...\{\textrm{normal}:V,\; \textrm{C^j\_name}
                                                   :S_{C^j}. \; \forall C^j \...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -515,28 +504,28 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-./report.tex:173: Missing } inserted.
+./report.tex:154: Missing } inserted.
 <inserted text> 
                 }
-l.173     \(
+l.154     \(
              H_E = \) &  \( \{\textrm{(normal, orig, normal)} : E \) \\
 I've put in what seems to be necessary to fix
 the current column of the current alignment.
 Try to go on, since this might almost work.
 
-./report.tex:173: Missing } inserted.
+./report.tex:154: Missing } inserted.
 <inserted text> 
                 }
-l.173     \(
+l.154     \(
              H_E = \) &  \( \{\textrm{(normal, orig, normal)} : E \) \\
 I've put in what seems to be necessary to fix
 the current column of the current alignment.
 Try to go on, since this might almost work.
 
-./report.tex:173: Missing $ inserted.
+./report.tex:154: Missing $ inserted.
 <inserted text> 
                 $
-l.173     \(
+l.154     \(
              H_E = \) &  \( \{\textrm{(normal, orig, normal)} : E \) \\
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -544,18 +533,18 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-./report.tex:175: Missing $ inserted.
+./report.tex:156: Missing $ inserted.
 <inserted text> 
                 $
-l.175 ...,\,\, \textrm{(normal, toSup, C^j\_name)}
+l.156 ...,\,\, \textrm{(normal, toSup, C^j\_name)}
                                                    : flip(E_{S_{C^j}}) \) \\
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
-./report.tex:175: Extra }, or forgotten $.
+./report.tex:156: Extra }, or forgotten $.
 \mbox  #1->\leavevmode \hbox {#1}
                                  
-l.175 ...,\,\, \textrm{(normal, toSup, C^j\_name)}
+l.156 ...,\,\, \textrm{(normal, toSup, C^j\_name)}
                                                    : flip(E_{S_{C^j}}) \) \\
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -563,10 +552,10 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-./report.tex:175: Extra }, or forgotten $.
+./report.tex:156: Extra }, or forgotten $.
 \nfss@text #1->{\mbox {#1}}
                            
-l.175 ...,\,\, \textrm{(normal, toSup, C^j\_name)}
+l.156 ...,\,\, \textrm{(normal, toSup, C^j\_name)}
                                                    : flip(E_{S_{C^j}}) \) \\
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -574,28 +563,28 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-./report.tex:176: Missing } inserted.
+./report.tex:157: Missing } inserted.
 <inserted text> 
                 }
-l.176               &
+l.157               &
                       \( \,\,\, \textrm{(normal, identity, normal)} : I_V \) \\
 I've put in what seems to be necessary to fix
 the current column of the current alignment.
 Try to go on, since this might almost work.
 
-./report.tex:176: Missing } inserted.
+./report.tex:157: Missing } inserted.
 <inserted text> 
                 }
-l.176               &
+l.157               &
                       \( \,\,\, \textrm{(normal, identity, normal)} : I_V \) \\
 I've put in what seems to be necessary to fix
 the current column of the current alignment.
 Try to go on, since this might almost work.
 
-./report.tex:176: Missing $ inserted.
+./report.tex:157: Missing $ inserted.
 <inserted text> 
                 $
-l.176               &
+l.157               &
                       \( \,\,\, \textrm{(normal, identity, normal)} : I_V \) \\
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -603,18 +592,18 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-./report.tex:177: Missing $ inserted.
+./report.tex:158: Missing $ inserted.
 <inserted text> 
                 $
-l.177 ... C^j\_name\textrm{, identity, C^j\_name)}
+l.158 ... C^j\_name\textrm{, identity, C^j\_name)}
                                                    : I_{S_{C^j}}. \;\; \fora...
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
-./report.tex:177: Extra }, or forgotten $.
+./report.tex:158: Extra }, or forgotten $.
 \mbox  #1->\leavevmode \hbox {#1}
                                  
-l.177 ... C^j\_name\textrm{, identity, C^j\_name)}
+l.158 ... C^j\_name\textrm{, identity, C^j\_name)}
                                                    : I_{S_{C^j}}. \;\; \fora...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -622,10 +611,10 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-./report.tex:177: Extra }, or forgotten $.
+./report.tex:158: Extra }, or forgotten $.
 \nfss@text #1->{\mbox {#1}}
                            
-l.177 ... C^j\_name\textrm{, identity, C^j\_name)}
+l.158 ... C^j\_name\textrm{, identity, C^j\_name)}
                                                    : I_{S_{C^j}}. \;\; \fora...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -633,28 +622,28 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-./report.tex:178: Missing } inserted.
+./report.tex:159: Missing } inserted.
 <inserted text> 
                 }
-l.178 \end
+l.159 \end
           {tabular}\\
 I've put in what seems to be necessary to fix
 the current column of the current alignment.
 Try to go on, since this might almost work.
 
-./report.tex:178: Missing } inserted.
+./report.tex:159: Missing } inserted.
 <inserted text> 
                 }
-l.178 \end
+l.159 \end
           {tabular}\\
 I've put in what seems to be necessary to fix
 the current column of the current alignment.
 Try to go on, since this might almost work.
 
-./report.tex:178: Missing $ inserted.
+./report.tex:159: Missing $ inserted.
 <inserted text> 
                 $
-l.178 \end
+l.159 \end
           {tabular}\\
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -663,192 +652,208 @@ really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 170--179
+Underfull \hbox (badness 10000) in paragraph at lines 151--160
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 182--185
 
  []
 
 [2]
-Underfull \hbox (badness 10000) in paragraph at lines 201--204
+Underfull \hbox (badness 10000) in paragraph at lines 196--199
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 215--218
+Underfull \hbox (badness 10000) in paragraph at lines 206--209
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 225--228
+Underfull \hbox (badness 10000) in paragraph at lines 216--222
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 235--241
+Underfull \hbox (badness 10000) in paragraph at lines 224--230
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 243--249
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 251--256
+Underfull \hbox (badness 10000) in paragraph at lines 232--237
 
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 277--313
+Underfull \hbox (badness 10000) in paragraph at lines 258--294
 
  []
 
 
-Overfull \hbox (5.79605pt too wide) in paragraph at lines 277--313
+Overfull \hbox (5.79605pt too wide) in paragraph at lines 258--294
 [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 277--313
+Underfull \hbox (badness 10000) in paragraph at lines 258--294
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 277--313
+Underfull \hbox (badness 10000) in paragraph at lines 258--294
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 317--322
-
- []
-
-[4]
-Underfull \hbox (badness 10000) in paragraph at lines 358--370
+Underfull \hbox (badness 10000) in paragraph at lines 298--303
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 358--370
+Underfull \vbox (badness 6792) has occurred while \output is active []
+
+ [4]
+Underfull \hbox (badness 10000) in paragraph at lines 339--351
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 358--370
+Underfull \hbox (badness 10000) in paragraph at lines 339--351
 
  []
 
 
-Overfull \hbox (1.24419pt too wide) in paragraph at lines 380--380
+Underfull \hbox (badness 10000) in paragraph at lines 339--351
+
+ []
+
+
+Overfull \hbox (1.24419pt too wide) in paragraph at lines 361--361
  []|\OT1/cmr/m/n/10.95 Dataset[]tree[]cycle| 
  []
 
 
-Overfull \hbox (14.54326pt too wide) in paragraph at lines 373--383
+Overfull \hbox (14.54326pt too wide) in paragraph at lines 354--364
 [] 
+ []
+
+
+Overfull \hbox (2.06554pt too wide) in paragraph at lines 386--386
+ []|\OT1/cmr/m/n/8 type| 
+ []
+
+
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 386--386
+ []|\OT1/cmr/m/n/8 global[]add[]pool| 
+ []
+
+
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 386--386
+ []|\OT1/cmr/m/n/8 global[]add[]pool| 
+ []
+
+
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 386--386
+ []|\OT1/cmr/m/n/8 global[]add[]pool| 
+ []
+
+
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 386--386
+ []|\OT1/cmr/m/n/8 global[]add[]pool| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 389--391
+
  []
 
 [5]
-Overfull \hbox (2.06554pt too wide) in paragraph at lines 405--405
- []|\OT1/cmr/m/n/8 type| 
- []
-
-
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 405--405
- []|\OT1/cmr/m/n/8 global[]add[]pool| 
- []
-
-
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 405--405
- []|\OT1/cmr/m/n/8 global[]add[]pool| 
- []
-
-
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 405--405
- []|\OT1/cmr/m/n/8 global[]add[]pool| 
- []
-
-
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 405--405
- []|\OT1/cmr/m/n/8 global[]add[]pool| 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 408--410
-
- []
-
-
-Overfull \hbox (2.14326pt too wide) in paragraph at lines 411--427
+Overfull \hbox (2.14326pt too wide) in paragraph at lines 392--408
 [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 411--427
+Underfull \hbox (badness 10000) in paragraph at lines 392--408
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 411--427
+Underfull \hbox (badness 10000) in paragraph at lines 392--408
 
  []
 
 
-Overfull \hbox (9.67722pt too wide) in paragraph at lines 440--442
+Overfull \hbox (9.67722pt too wide) in paragraph at lines 421--423
 \OT1/cmr/m/n/10.95 In sum-mary it in-cludes 400 pairs of non-isomorphic graphs with dif-fi-culty up to 4-WL-indistinguishable,
  []
 
-[6]
-Overfull \hbox (2.06554pt too wide) in paragraph at lines 476--476
+
+Overfull \hbox (2.06554pt too wide) in paragraph at lines 457--457
  []|\OT1/cmr/m/n/8 type| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 476--476
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 457--457
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 476--476
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 457--457
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 496--496
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 477--477
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 496--496
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 477--477
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 496--496
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 477--477
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 496--496
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 477--477
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 496--496
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 477--477
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (4.78897pt too wide) in paragraph at lines 548--548
+Overfull \hbox (4.78897pt too wide) in paragraph at lines 529--529
  []|\OT1/cmr/m/n/8 HGAT[]m[]simple| 
  []
 
 
-Overfull \hbox (2.4195pt too wide) in paragraph at lines 548--548
+Overfull \hbox (2.4195pt too wide) in paragraph at lines 529--529
  []|\OT1/cmr/m/n/8 HGIN[]m[]simple| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 551--552
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6]
+Underfull \hbox (badness 10000) in paragraph at lines 532--533
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--626
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--626
 
  []
 
@@ -856,22 +861,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 551--552
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [7]
-Underfull \hbox (badness 10000) in paragraph at lines 553--645
+Underfull \hbox (badness 10000) in paragraph at lines 672--721
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 553--645
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 691--740
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 691--740
+Underfull \hbox (badness 10000) in paragraph at lines 672--721
 
  []
 
@@ -879,17 +874,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 691--740
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [8]
-Underfull \hbox (badness 10000) in paragraph at lines 758--761
+Underfull \hbox (badness 10000) in paragraph at lines 739--742
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 762--778
+Underfull \hbox (badness 10000) in paragraph at lines 743--759
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 782--784
+Underfull \hbox (badness 10000) in paragraph at lines 763--765
 
  []
 
@@ -897,60 +892,61 @@ Underfull \hbox (badness 10000) in paragraph at lines 782--784
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [9]
-Overfull \hbox (2.06554pt too wide) in paragraph at lines 806--806
+Overfull \hbox (2.06554pt too wide) in paragraph at lines 787--787
  []|\OT1/cmr/m/n/8 type| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 806--806
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 787--787
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (1.15974pt too wide) in paragraph at lines 806--806
+Overfull \hbox (1.15974pt too wide) in paragraph at lines 787--787
  []|\OT1/cmr/m/n/8 global[]add[]pool| 
  []
 
 
-Overfull \hbox (2.4195pt too wide) in paragraph at lines 806--806
+Overfull \hbox (2.4195pt too wide) in paragraph at lines 787--787
  []|\OT1/cmr/m/n/8 HGIN[]m[]simple| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 785--807
+Underfull \hbox (badness 10000) in paragraph at lines 766--788
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 808--810
+Underfull \hbox (badness 10000) in paragraph at lines 789--791
 
  []
 
 
-Overfull \hbox (2.06554pt too wide) in paragraph at lines 834--834
+Overfull \hbox (2.06554pt too wide) in paragraph at lines 815--815
  []|\OT1/cmr/m/n/8 type| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 811--855
+Underfull \hbox (badness 10000) in paragraph at lines 792--836
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 811--855
+Underfull \hbox (badness 10000) in paragraph at lines 792--836
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 856--860
+Underfull \hbox (badness 10000) in paragraph at lines 837--841
 
  []
 
-(./report.bbl)
 
-Package natbib Warning: There were undefined citations.
+Underfull \hbox (badness 10000) in paragraph at lines 845--852
 
-[10] (./report.aux)
+ []
+
+[10] (./report.bbl) [11] (./report.aux)
  ***********
 LaTeX2e <2023-11-01>
 L3 programming layer <2024-01-04>
@@ -960,22 +956,22 @@ L3 programming layer <2024-01-04>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 8A53A1FA51D1AB2961856E4E47377595;2395.
+(rerunfilecheck)             Checksum: F85921AFAFD18419D35EEBBC64B825BF;2489.
  ) 
 Here is how much of TeX's memory you used:
- 11637 strings out of 474166
- 184873 string characters out of 5717815
+ 11638 strings out of 474166
+ 184840 string characters out of 5717815
  2013525 words of memory out of 5000000
- 33774 multiletter control sequences out of 15000+600000
+ 33773 multiletter control sequences out of 15000+600000
  567575 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 90i,13n,93p,530b,503s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,13n,93p,639b,491s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmex10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmr10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmr6.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmr8.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmti10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></nix/store
 /m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/fonts/type1/public/cm-super/sfrm1095.pfb>
-Output written on report.pdf (10 pages, 255199 bytes).
+Output written on report.pdf (11 pages, 256314 bytes).
 PDF statistics:
- 213 PDF objects out of 1000 (max. 8388607)
- 165 compressed objects within 2 object streams
- 31 named destinations out of 1000 (max. 500000)
- 129 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 221 PDF objects out of 1000 (max. 8388607)
+ 172 compressed objects within 2 object streams
+ 33 named destinations out of 1000 (max. 500000)
+ 137 words of extra memory for PDF output out of 10000 (max. 10000000)
 
