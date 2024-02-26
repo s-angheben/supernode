@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex report"] 0 "report.aux" "report.bbl" "report" 1708953355.04031 -1
+["bibtex report"] 0 "report.aux" "report.bbl" "report" 1708972390.52732 -1
   "/nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/bibtex/bib/gloss/sample.bib" 1 2721 b88105703bd616b4f9867992219afb8a ""
   "/nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/bibtex/bst/natbib/plainnat.bst" 1 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "report.aux" 1708953354.78893 3074 fdf04709715780f76e1b03c14b4f5f0a "pdflatex"
+  "report.aux" 1708972390.2595 3074 fdf04709715780f76e1b03c14b4f5f0a "pdflatex"
   (generated)
   "report.bbl"
   "report.blg"
   (rewritten before read)
-["pdflatex"] 1708953354.25141 "report.tex" "report.pdf" "report" 1708953355.04054 2
+["pdflatex"] 1708972389.72441 "report.tex" "report.pdf" "report" 1708972390.52755 2
   "/nix/store/8j4rqz5k2kvqzdzahw03dx6j942r67sh-texlive-combined-full-2023.20240114/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1 4993221 dd7192cabd784103151b4984a62907e8 ""
   "/nix/store/8j4rqz5k2kvqzdzahw03dx6j942r67sh-texlive-combined-full-2023.20240114/share/texmf-var/web2c/pdftex/pdflatex.fmt" 1 8219117 e32fe466df6a658ecb61fb67b3757478 ""
   "/nix/store/8j4rqz5k2kvqzdzahw03dx6j942r67sh-texlive-combined-full-2023.20240114/share/texmf-var/web2c/texmf.cnf" 1 43251 09f6f615cf914165b4a3bade72670a92 ""
@@ -117,10 +117,10 @@
   "/nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/tex/latex/tools/multicol.sty" 1 32515 51caec75eda9c8890135f12f1a4eddc3 ""
   "/nix/store/m2615lngxdwy5gpw49l2p0klaqlx3ak4-texlive-combined-full-2023.20240114-texmfdist/tex/latex/url/url.sty" 1 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "jmlr2e.sty" 1708940079.70305 15617 6c553306cc5cc001cfb24d9a49919e9c ""
-  "report.aux" 1708953354.78893 3074 fdf04709715780f76e1b03c14b4f5f0a "pdflatex"
+  "report.aux" 1708972390.2595 3074 fdf04709715780f76e1b03c14b4f5f0a "pdflatex"
   "report.bbl" 1708940079.70305 0 d41d8cd98f00b204e9800998ecf8427e "bibtex report"
-  "report.out" 1708953354.78893 2489 f85921afafd18419d35eebbc64b825bf "pdflatex"
-  "report.tex" 1708953352.6879 43596 e18c4d5f7f0606856db29d11f23edc1f ""
+  "report.out" 1708972390.2595 2489 f85921afafd18419d35eebbc64b825bf "pdflatex"
+  "report.tex" 1708972389.51806 43575 b9108dd37fcfdbf6711e78c0eee78e47 ""
   (generated)
   "report.aux"
   "report.log"
