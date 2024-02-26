@@ -193,13 +193,13 @@ The usual structure of GNN models for graph classification is the following:
     \item Classifier: a function that takes the graph embedding and computes the output.
 \end{enumerate}
     \noindent
-    We follow this structure for all the models that we implemented, but we added a new step at the beginning to enable a flexible initialization for supernodes:
+    We follow this structure for all the models that we implemented, but we added a new step at the beginning to enable a flexible initialization of the supernodes:
     \begin{enumerate}
         \setcounter{enumi}{-1}
-        \item Supernode init a graph convolutional layers that compute supernode's initial features.
+        \item Supernode init: a graph convolutional layers that compute supernode's initial features.
     \end{enumerate}
 \noindent
-Depending on the type of transformation that we want to apply to the graph the models will threaten the data in different ways and so the layers would be different.\\
+Depending on the type of transformation that we want to apply to the graph the models will threaten the data in different ways and so the layers will be different.\\
 From the implementation point of view, to perform convolutional operation only on supernodes in homogeneous graphs we used masks on nodes and edges created during the transformation meanwhile in heterogeneous graphs we used the \texttt{HeteroConv} from torch\_geometric that allow to specify the edge type to operate on, we added the \texttt{identity} type edge to keep the nodes at the same value during the update of other type of nodes.\\
 
 
@@ -644,7 +644,7 @@ Since each graph of the dataset doesn't have any node features with apply one of
 } \\\\
 
 \noindent
-After testing several models we have selected the best: GIN\_SGIN\_noSINT for homogeneous supernodes and HGIN\_m\_simple for heterogeneous multi supernodes. On this two models we run the test on all our concepts and some combinations of them.
+After testing several models we have selected the best: GIN\_SGIN\_noSINIT for homogeneous supernodes and HGIN\_m\_simple for heterogeneous multi supernodes. On this two models we run the test on all our concepts and some combinations of them.
 
 \noindent
 \makebox[\textwidth][c]{
@@ -661,7 +661,7 @@ After testing several models we have selected the best: GIN\_SGIN\_noSINT for ho
     \cline{8-9}
     \cline{8-9}
     \cline{10-11}
-    Model&\multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy&  \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy\\
+    Concept&\multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy&  \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy\\
     \hline
     \hline
     \multicolumn{11}{|l|}{Supernode homogeneous, model:GIN\_SGIN\_noSINIT} \\
@@ -703,7 +703,7 @@ After testing several models we have selected the best: GIN\_SGIN\_noSINT for ho
     \cline{8-9}
     \cline{8-9}
     \cline{10-11}
-    Model&\multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy&  \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy\\
+    Concept&\multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy& \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy&  \multicolumn{1}{c}{\scriptsize Number}&\scriptsize Accuracy\\
     \hline
     \hline
     \multicolumn{11}{|l|}{Supernode heterogeneous multi, model:HGIN\_m\_simple} \\
@@ -752,7 +752,115 @@ Our best model uses the heterogeneous multi transformation with five concepts an
 \section{Real world dataset} % (fold)
 \label{sec:real_world_dataset}
 
+As last test we decided to try supernode graph neural network on real world datasets.
+To make our analysis we have choosen \texttt{HIV} by \texttt{MoleculeNet} and \texttt{PROTEINS} by \texttt{TUDataset}.
+
+\noindent
+\textbf{Dataset}\\
+Both the datasets didn't contains any splitting mask for training, validation and test. We decided to split them 0.6, 0.2 and 0.2 respectively after applying a rondom shuffle. To make the experiments reproducible we set every random seed to a fix number.\\
+
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}| }
+    \hline
+    \multicolumn{7}{|c|}{Real world dataset} \\
+    \hline
+    dataset name & n. graphs & feature dim. & n. classes & avg. n. nodes & avg. n. edges & avg. node degree\\
+    \hline
+    HIV & 41127 & 9 & 2 & 25.5 & 54.9 & 2.14 \\
+    \hline
+    PROTEINS & 1113 & 3 & 2 & 39.1 & 145.6 & 3.73 \\
+    \hline
+\end{tabular}
+}\\
+
+
+
+\subsection{Settings and results}
+\textbf{Models}\\
+For the final test we took our best models.\\
+
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{2cm}|M{0.5cm}|M{4cm}|M{6cm}|M{2cm}|M{2cm}| }
+    \hline
+    \multicolumn{6}{|c|}{Models} \\
+    \hline
+    model name & type & supernode init & node embeddings & readout & classifier \\
+    \hline
+    GIN &0 & - & 3 * (GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+    GIN\_SGIN \_noSINIT & 1 & - & 3 * (normal: GINConv(MLP,32), supernode:GINConv(MLP,32) + relu) & global\_add\_pool & MLP(3L,32)\\
+    \hline
+    HGIN\_m\_simple & 3 & SimpleConv('add') & 3 * ((HeteroConv({
+           ('normal', 'orig', 'normal'): GINConv(MLP,32),
+           ('normal', 'toSup', \( \mathcal{C} \)): SimpleConv('add'),
+           (\( \mathcal{C} \), 'toNor', 'normal'): GINConv(MLP, 32),
+        }, aggr='sum'))+ relu) \( \forall \mathcal{C} \) & add(global \_add\_pool of each type) & MLP(3L,32)\\
+    \hline
+\end{tabular}
+}\\
+
+\noindent
+\textbf{Results}\\
+
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{3cm}|M{0.5cm}|M{2cm}|M{4.5cm}|M{2cm}|M{2cm}| }
+    \hline
+    \multicolumn{6}{|c|}{Results} \\
+    \hline
+    model name & type & dataset & concepts & epoch & test accuracy\\
+    \hline
+    GIN & 0 & HIV & - & 150 & 0.965 \\
+    \hline
+    GIN\_SGIN\_noSINIT & 1 & HIV & cyclebasis & 150 & 0.965\\
+    \hline
+    GIN\_SGIN\_noSINIT & 1 & HIV & maxclique & 150 & 0.964\\
+    \hline
+    HGIN\_m\_simple & 3 & HIV & cyclebasis & 150 & 0.967\\
+    \hline
+    HGIN\_m\_simple & 3 & HIV & maxclique & 150 & 0.969\\
+    \hline
+    HGIN\_m\_simple & 3 & HIV & cycb\_maxcliq\_star2 \_minl\_maxl & 150 & 0.969\\
+    \hline
+\end{tabular}
+}\\
+\noindent
+\makebox[\textwidth][c]{
+\scriptsize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |M{3cm}|M{0.5cm}|M{2cm}|M{4.5cm}|M{2cm}|M{2cm}| }
+    \hline
+    GIN & 0 & PROTEINS & - & 150 & 0.744 \\
+    \hline
+    GIN\_SGIN\_noSINIT & 1 & PROTEINS & cyclebasis & 150 & 0.776\\
+    \hline
+    GIN\_SGIN\_noSINIT & 1 & PROTEINS & maxclique & 150 & 0.80\\
+    \hline
+    HGIN\_m\_simple & 3 & PROTEINS & cyclebasis & 150 & 0.633\\
+    \hline
+    HGIN\_m\_simple & 3 & PROTEINS & maxclique & 150 & 0.780\\
+    \hline
+    HGIN\_m\_simple & 3 & PROTEINS & cycb\_maxcliq\_star2 \_minl\_maxl & 150 & 0.708\\
+    \hline
+\end{tabular}
+}\\\\
+
+\noindent
+\textbf{Considerations}\\
+For the \texttt{HIV} dataset we can't see any significant difference, the base model already produce semi-optimal performance and so do the others. The complexity is already saturated by the base model so for our purpose is this dataset is not a good candidate.\\\\
+On the \texttt{PROTEINS} dataset instead, can be observed that in some cases the supernode models perform better, mostly when the concept cyclebasis is used. Furthermore results that the homogeneous transformation is always better than the heterogeneous multi which is the opposite of what happened in the \texttt{BREC} dataset. One reason could be the fact that the \texttt{PROTEIN} dataset is not very large and 3-types models have more parameters than 1-type models.
+
 % section Real world dataset (end)
+
+\section{Technical implementation}
 
 
 %{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
