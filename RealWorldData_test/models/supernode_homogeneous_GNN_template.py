@@ -16,6 +16,7 @@ class S_GNN(L.LightningModule):
         self.loss_fn = F.cross_entropy
 
         self.accuracy = torchmetrics.Accuracy(task='multiclass', num_classes=out_channels)
+        self.auroc = torchmetrics.AUROC(task='multiclass', num_classes=out_channels)
 
     def forward(self, data):
         x, edge_index, batch = data.x, data.edge_index, data.batch
@@ -35,21 +36,24 @@ class S_GNN(L.LightningModule):
     def training_step(self, data, batch_idx):
         loss, y_hat, y = self._step(data, batch_idx)
         accuracy = self.accuracy(y_hat.softmax(dim=-1), y)
-        self.log_dict({'train_loss': loss, 'train_accuracy': accuracy},
+        auroc = self.auroc(y_hat.softmax(dim=-1), y)
+        self.log_dict({'train_loss': loss, 'train_accuracy': accuracy, 'train_auroc': auroc},
                       prog_bar=True, on_step=False, on_epoch=True, batch_size=data.num_graphs)
         return loss
 
     def validation_step(self, data, batch_idx):
         loss, y_hat, y = self._step(data, batch_idx)
         accuracy = self.accuracy(y_hat.softmax(dim=-1), y)
-        self.log_dict({'val_loss': loss, 'val_accuracy': accuracy},
+        auroc = self.auroc(y_hat.softmax(dim=-1), y)
+        self.log_dict({'val_loss': loss, 'val_accuracy': accuracy, 'val_auroc': auroc},
                       prog_bar=True, on_step=False, on_epoch=True, batch_size=data.num_graphs)
         return loss
 
     def test_step(self, data, batch_idx):
         loss, y_hat, y = self._step(data, batch_idx)
         accuracy = self.accuracy(y_hat.softmax(dim=-1), y)
-        self.log_dict({'test_loss': loss, 'test_accuracy': accuracy},
+        auroc = self.auroc(y_hat.softmax(dim=-1), y)
+        self.log_dict({'test_loss': loss, 'test_accuracy': accuracy, 'test_auroc': auroc},
                       prog_bar=True, on_step=False, on_epoch=True, batch_size=data.num_graphs)
         return loss
 

@@ -1,0 +1,10 @@
+concepts: cycb_maxcliq_star2_minl_maxl
+dataset: PROTEINS
+device: !!python/object/apply:torch.device
+- cuda
+dropout: 0.5
+epochs: 150
+hidden_channels: 32
+model: S_GIN_multi
+num_layers: 3
+type: supernode_heterogeneous_GNNs

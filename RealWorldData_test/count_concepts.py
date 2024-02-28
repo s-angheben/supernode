@@ -56,13 +56,18 @@ def count_stats(dataset, dataset_name):
             ))
 
 def main():
-    dataset = MoleculeNet("./dataset/Molecule_stat", name="HIV",
-                              pre_transform=squeeze_y)
-    count_stats(dataset, "HIV")
+#    dataset = MoleculeNet("./dataset/Molecule_stat", name="HIV",
+#                              pre_transform=squeeze_y)
+#    count_stats(dataset, "HIV")
+#
+#    print("\n")
+#
+#    dataset = TUDataset("./dataset/TUDataset_stat", name="PROTEINS")
+#    count_stats(dataset, "PROTEINS")
+#
+#    print("\n")
 
-    print("\n")
-
-    dataset = TUDataset("./dataset/TUDataset_stat", name="PROTEINS")
+    dataset = TUDataset("./dataset/TUDataset_stat", name="IMDB-BINARY")
     count_stats(dataset, "PROTEINS")
 
 

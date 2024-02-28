@@ -148,3 +148,41 @@ class TUDProteinsDataModule(L.LightningDataModule):
     def test_dataloader(self):
         return DataLoader(self.dataset[self.train_prop+self.val_prop:], self.batch_size,
                           shuffle=False, num_workers=self.num_workers)
+
+
+def makefeatures(data):
+    data.x = torch.ones((data.num_nodes, 1))
+    return data
+
+class TUDIMDBbDataModule(L.LightningDataModule):
+    def __init__(self, data_dir, transform=None, pre_transform=None,
+                 batch_size=64, num_workers=4,
+                 train_prop=0.6, test_prop=0.2, val_prop=0.2):
+        super().__init__()
+        self.data_dir = data_dir
+        self.batch_size = batch_size
+        self.num_workers = num_workers
+        self.train_prop = train_prop
+        self.test_prop = test_prop
+        self.val_prop = val_prop
+        self.transform = transform
+        self.pre_transform = pre_transform
+
+
+    def setup(self, stage=None):
+        self.dataset = TUDataset(self.data_dir, name="IMDB-BINARY",
+                                 pre_transform=self.pre_transform,
+                                 transform=self.transform)
+        self.dataset = self.dataset.shuffle()
+
+    def train_dataloader(self):
+        return DataLoader(self.dataset[:self.train_prop], self.batch_size,
+                          shuffle=True, num_workers=self.num_workers)
+
+    def val_dataloader(self):
+        return DataLoader(self.dataset[self.train_prop:self.train_prop+self.val_prop], self.batch_size,
+                          shuffle=False, num_workers=self.num_workers)
+
+    def test_dataloader(self):
+        return DataLoader(self.dataset[self.train_prop+self.val_prop:], self.batch_size,
+                          shuffle=False, num_workers=self.num_workers)

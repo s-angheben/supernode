@@ -1,0 +1,10 @@
+concepts: maxcliques
+dataset: IMDBb
+device: !!python/object/apply:torch.device
+- cuda
+dropout: 0.5
+epochs: 150
+hidden_channels: 32
+model: S_GIN
+num_layers: 3
+type: supernode_homogeneous_GNNs

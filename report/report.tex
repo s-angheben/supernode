@@ -734,23 +734,23 @@ Our best model uses the heterogeneous multi transformation with five concepts an
 \label{sec:real_world_dataset}
 
 As last test we decided to try supernode graph neural network on real world datasets.
-To make our analysis we have choosen \texttt{HIV} by \texttt{MoleculeNet} and \texttt{PROTEINS} by \texttt{TUDataset}.
+To make our analysis we have choosen \texttt{IMDB-BINARY} and \texttt{PROTEINS} by \texttt{TUDataset}.
 
 \noindent
 \textbf{Dataset}\\
-Both the datasets didn't contains any splitting mask for training, validation and test. We decided to split them 0.6, 0.2 and 0.2 respectively after applying a random shuffle. To make the experiments reproducible we set every random seed to a fix number.\\
+Both the datasets are well balanced and didn't contain any splitting mask for training, validation and test. We decided to split them 0.6, 0.2 and 0.2 respectively after applying a random shuffle. To make the experiments reproducible we set every random seed to a fix number.\\
 
 \noindent
 \makebox[\textwidth][c]{
 \scriptsize
 \renewcommand{\arraystretch}{1.5}
-\begin{tabular}{ |M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}| }
+\begin{tabular}{ |M{2.5cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}|M{2cm}| }
     \hline
     \multicolumn{7}{|c|}{Real world dataset} \\
     \hline
     dataset name & n. graphs & feature dim. & n. classes & avg. n. nodes & avg. n. edges & avg. node degree\\
     \hline
-    HIV & 41127 & 9 & 2 & 25.5 & 54.9 & 2.14 \\
+    IMDB-BINARY & 1000 & 1 & 2 & 19.8 & 193.1 & 8.89 \\
     \hline
     PROTEINS & 1113 & 3 & 2 & 39.1 & 145.6 & 3.73 \\
     \hline
@@ -793,23 +793,23 @@ For the final test we took our best models.\\
 \makebox[\textwidth][c]{
 \scriptsize
 \renewcommand{\arraystretch}{1.5}
-\begin{tabular}{ |M{3cm}|M{0.5cm}|M{2cm}|M{4.5cm}|M{2cm}|M{2cm}| }
+\begin{tabular}{ |M{3cm}|M{0.5cm}|M{2.5cm}|M{4.5cm}|M{1cm}|M{1.5cm}|M{1.5cm}| }
     \hline
-    \multicolumn{6}{|c|}{Results} \\
+    \multicolumn{7}{|c|}{Results} \\
     \hline
-    model name & type & dataset & concepts & epoch & test accuracy\\
+    model name & type & dataset & concepts & epoch & test accuracy & test ROC AUC\\
     \hline
-    GIN & 0 & HIV & - & 150 & 0.965 \\
+    GIN & 0 & IMDB-BINARY & - & 150 & 0.725 & 0.799 \\
     \hline
-    GIN\_SGIN\_noSINIT & 1 & HIV & cyclebasis & 150 & 0.965\\
+    GIN\_SGIN\_noSINIT & 1 & IMDB-BINARY & cyclebasis & 150 & 0.705 & 0.773\\
     \hline
-    GIN\_SGIN\_noSINIT & 1 & HIV & maxclique & 150 & 0.964\\
+    GIN\_SGIN\_noSINIT & 1 & IMDB-BINARY & maxclique & 150 & 0.690 & 0.791 \\
     \hline
-    HGIN\_m\_simple & 3 & HIV & cyclebasis & 150 & 0.967\\
+    HGIN\_m\_simple & 3 & IMDB-BINARY & cyclebasis & 150 & 0.755 & 0.873 \\
     \hline
-    HGIN\_m\_simple & 3 & HIV & maxclique & 150 & 0.969\\
+    HGIN\_m\_simple & 3 & IMDB-BINARY & maxclique & 150 & 0.730 & 0.849 \\
     \hline
-    HGIN\_m\_simple & 3 & HIV & cycb\_maxcliq\_star2 \_minl\_maxl & 150 & 0.969\\
+    HGIN\_m\_simple & 3 & IMDB-BINARY & cycb\_maxcliq\_star2 \_minl\_maxl & 150 & 0.750 & 0.860 \\
     \hline
 \end{tabular}
 }\\
@@ -817,29 +817,27 @@ For the final test we took our best models.\\
 \makebox[\textwidth][c]{
 \scriptsize
 \renewcommand{\arraystretch}{1.5}
-\begin{tabular}{ |M{3cm}|M{0.5cm}|M{2cm}|M{4.5cm}|M{2cm}|M{2cm}| }
+\begin{tabular}{ |M{3cm}|M{0.5cm}|M{2.5cm}|M{4.5cm}|M{1cm}|M{1.5cm}|M{1.5cm}| }
     \hline
-    GIN & 0 & PROTEINS & - & 150 & 0.744 \\
+    GIN & 0 & PROTEINS & - & 150 & 0.744 & 0.811\\
     \hline
-    GIN\_SGIN\_noSINIT & 1 & PROTEINS & cyclebasis & 150 & 0.776\\
+    GIN\_SGIN\_noSINIT & 1 & PROTEINS & cyclebasis & 150 & 0.789 & 0.864\\
     \hline
-    GIN\_SGIN\_noSINIT & 1 & PROTEINS & maxclique & 150 & 0.80\\
+    GIN\_SGIN\_noSINIT & 1 & PROTEINS & maxclique & 150 & 0.785 & 0.857\\
     \hline
-    HGIN\_m\_simple & 3 & PROTEINS & cyclebasis & 150 & 0.633\\
+    HGIN\_m\_simple & 3 & PROTEINS & cyclebasis & 150 & 0.722 & 0.831\\
     \hline
-    HGIN\_m\_simple & 3 & PROTEINS & maxclique & 150 & 0.780\\
+    HGIN\_m\_simple & 3 & PROTEINS & maxclique & 150 & 0.802 & 0.885\\
     \hline
-    HGIN\_m\_simple & 3 & PROTEINS & cycb\_maxcliq\_star2 \_minl\_maxl & 150 & 0.708\\
+    HGIN\_m\_simple & 3 & PROTEINS & cycb\_maxcliq\_star2 \_minl\_maxl & 150 & 0.686 & 0.851\\
     \hline
 \end{tabular}
 }\\\\
 
 \noindent
 \textbf{Considerations}\\
-For the \texttt{HIV} dataset we can't see any significant difference, the base model already produce semi-optimal performance and so do the others. The complexity is already saturated by the base model so for our purpose is this dataset is not a good candidate.\\\\
-On the \texttt{PROTEINS} dataset instead, can be observed that in some cases the supernode models perform better, mostly when the concept cyclebasis is used. Furthermore results that the homogeneous transformation is always better than the heterogeneous multi which is the opposite of what happened in the \texttt{BREC} dataset. One reason could be the fact that the \texttt{PROTEIN} dataset is not very large and 3-types models have more parameters than 1-type models.
-
-% section Real world dataset (end)
+%For the \texttt{HIV} dataset we can't see any significant difference, the base model already produce semi-optimal performance and so do the others. The complexity is already saturated by the base model so for our purpose is this dataset is not a good candidate.\\\\
+In both dataset with the right concepts the supernode models perform better than the base model. Further investigation can be done by tuning more the models.
 
 \section{Technical implementation}
 The first idea of supernode for this project was via the homogeneous transformation, both the original node and the supernodes are of the same type and the convolutional graph operations operate on them equally at the same time.\\ The first idea was to convert the graph to \texttt{networkx}, extract the concepts, create and connect the proper node and then convert back the graph to the \texttt{torch\_geometric} representation. This was not very flexible because the supernode initialization could be done only during the preprocessing and it was impossible to have a learnable initialization.\\
@@ -909,5 +907,7 @@ Further research can be done to ad-hoc dataset with ad-hoc concept built by expe
 
 \vskip 0.2in
 \bibliography{sample}
+\bibliography{references}
+
 
 \end{document}
